@@ -26,6 +26,7 @@
 #include "mmu.h"
 #include "trace.h"
 #include "pmu.h"
+#include "x86_vac.h"
 
 /*
  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be

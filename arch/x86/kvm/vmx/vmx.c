@@ -66,6 +66,7 @@
 #include "vmcs12.h"
 #include "vmx.h"
 #include "x86.h"
+#include "x86_vac.h"
 #include "smm.h"
 
 MODULE_AUTHOR("Qumranet");
