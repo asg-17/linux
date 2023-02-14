@@ -6,6 +6,7 @@
 #include "mmu.h"
 #include "kvm_cache_regs.h"
 #include "x86.h"
+#include "x86_vac.h"
 #include "smm.h"
 #include "cpuid.h"
 #include "pmu.h"
