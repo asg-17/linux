@@ -3,10 +3,19 @@
 #include "x86_vac.h"
 #include <asm/msr.h>
 
+struct vac_x86_ops vac_x86_ops __read_mostly;
+#define VAC_X86_OP(func)					     \
+	DEFINE_STATIC_CALL_NULL(vac_x86_##func,			     \
+				*(((struct vac_x86_ops *)0)->func));
+#define VAC_X86_OP_OPTIONAL VAC_X86_OP
+#define VAC_X86_OP_OPTIONAL_RET0 VAC_X86_OP
+#include "vac-x86-ops.h"
+
 #ifdef KVM_VAC
 
 static int __init vac_init(void)
 {
+	x86_vac_init();
 	return 0;
 }
 module_init(vac_init);
@@ -123,3 +132,49 @@ void drop_user_return_notifiers(void)
 		kvm_on_user_return(&msrs->urn);
 }
 
+static void kvm_user_return_msr_cpu_online(void)
+{
+	unsigned int cpu = smp_processor_id();
+	struct kvm_user_return_msrs *msrs = per_cpu_ptr(user_return_msrs, cpu);
+	u64 value;
+	int i;
+
+	for (i = 0; i < kvm_nr_uret_msrs; ++i) {
+		rdmsrl_safe(kvm_uret_msrs_list[i], &value);
+		msrs->values[i].host = value;
+		msrs->values[i].curr = value;
+	}
+}
+
+int kvm_arch_hardware_enable(void)
+{
+	int ret;
+
+	kvm_user_return_msr_cpu_online();
+
+	ret = static_call(vac_x86_hardware_enable)();
+	if (ret != 0)
+		return ret;
+
+	return 0;
+}
+
+void kvm_arch_hardware_disable(void)
+{
+	static_call(vac_x86_hardware_disable)();
+	drop_user_return_notifiers();
+}
+
+void x86_vac_init(void)
+{
+#define __VAC_X86_OP(func) \
+	static_call_update(vac_x86_##func, vac_x86_ops.func);
+#define VAC_X86_OP(func) \
+	WARN_ON(!vac_x86_ops.func); __VAC_X86_OP(func)
+#define VAC_X86_OP_OPTIONAL __VAC_X86_OP
+#define VAC_X86_OP_OPTIONAL_RET0(func) \
+	static_call_update(vac_x86_##func, (void *)vac_x86_ops.func ? : \
+					   (void *)__static_call_return0);
+#include "vac-x86-ops.h"
+#undef __VAC_X86_OP
+}

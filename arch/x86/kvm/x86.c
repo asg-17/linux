@@ -45,7 +45,6 @@
 #include <linux/highmem.h>
 #include <linux/iommu.h>
 #include <linux/cpufreq.h>
-#include <linux/user-return-notifier.h>
 #include <linux/srcu.h>
 #include <linux/slab.h>
 #include <linux/perf_event.h>
@@ -132,6 +131,7 @@ static void __get_sregs2(struct kvm_vcpu *vcpu, struct kvm_sregs2 *sregs2);
 
 static DEFINE_MUTEX(vendor_module_lock);
 struct kvm_x86_ops kvm_x86_ops __read_mostly;
+struct vac_x86_ops vac_x86_ops __read_mostly;
 
 #define KVM_X86_OP(func)					     \
 	DEFINE_STATIC_CALL_NULL(kvm_x86_##func,			     \
@@ -330,20 +330,6 @@ static inline void kvm_async_pf_hash_reset(struct kvm_vcpu *vcpu)
 	int i;
 	for (i = 0; i < ASYNC_PF_PER_VCPU; i++)
 		vcpu->arch.apf.gfns[i] = ~0;
-}
-
-static void kvm_user_return_msr_cpu_online(void)
-{
-	unsigned int cpu = smp_processor_id();
-	struct kvm_user_return_msrs *msrs = per_cpu_ptr(user_return_msrs, cpu);
-	u64 value;
-	int i;
-
-	for (i = 0; i < kvm_nr_uret_msrs; ++i) {
-		rdmsrl_safe(kvm_uret_msrs_list[i], &value);
-		msrs->values[i].host = value;
-		msrs->values[i].curr = value;
-	}
 }
 
 u64 kvm_get_apic_base(struct kvm_vcpu *vcpu)
@@ -9176,6 +9162,10 @@ static inline void kvm_ops_update(struct kvm_x86_init_ops *ops)
 #include <asm/kvm-x86-ops.h>
 #undef __KVM_X86_OP
 
+#ifndef CONFIG_KVM_VAC
+	x86_vac_init();
+#endif
+
 	kvm_pmu_ops_update(ops->pmu_ops);
 }
 
@@ -9209,8 +9199,8 @@ static int __kvm_x86_vendor_init(struct kvm_x86_init_ops *ops)
 	u64 host_pat;
 	int r, cpu;
 
-	if (kvm_x86_ops.hardware_enable) {
-		pr_err("already loaded vendor module '%s'\n", kvm_x86_ops.name);
+	if (vac_x86_ops.hardware_enable) {
+		pr_err("already loaded vendor module '%s'\n", vac_x86_ops.name);
 		return -EEXIST;
 	}
 
@@ -9325,7 +9315,7 @@ static int __kvm_x86_vendor_init(struct kvm_x86_init_ops *ops)
 	return 0;
 
 out_unwind_ops:
-	kvm_x86_ops.hardware_enable = NULL;
+	vac_x86_ops.hardware_enable = NULL;
 	static_call(kvm_x86_hardware_unsetup)();
 out_mmu_exit:
 	kvm_mmu_vendor_module_exit();
@@ -9377,7 +9367,7 @@ void kvm_x86_vendor_exit(void)
 	WARN_ON(static_branch_unlikely(&kvm_xen_enabled.key));
 #endif
 	mutex_lock(&vendor_module_lock);
-	kvm_x86_ops.hardware_enable = NULL;
+	vac_x86_ops.hardware_enable = NULL;
 	mutex_unlock(&vendor_module_lock);
 }
 EXPORT_SYMBOL_GPL(kvm_x86_vendor_exit);
@@ -11883,108 +11873,6 @@ void kvm_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
 	kvm_rip_write(vcpu, 0);
 }
 EXPORT_SYMBOL_GPL(kvm_vcpu_deliver_sipi_vector);
-
-int kvm_arch_hardware_enable(void)
-{
-	struct kvm *kvm;
-	struct kvm_vcpu *vcpu;
-	unsigned long i;
-	int ret;
-	u64 local_tsc;
-	u64 max_tsc = 0;
-	bool stable, backwards_tsc = false;
-
-	kvm_user_return_msr_cpu_online();
-
-	ret = kvm_x86_check_processor_compatibility();
-	if (ret)
-		return ret;
-
-	ret = static_call(kvm_x86_hardware_enable)();
-	if (ret != 0)
-		return ret;
-
-	local_tsc = rdtsc();
-	stable = !kvm_check_tsc_unstable();
-	list_for_each_entry(kvm, &vm_list, vm_list) {
-		kvm_for_each_vcpu(i, vcpu, kvm) {
-			if (!stable && vcpu->cpu == smp_processor_id())
-				kvm_make_request(KVM_REQ_CLOCK_UPDATE, vcpu);
-			if (stable && vcpu->arch.last_host_tsc > local_tsc) {
-				backwards_tsc = true;
-				if (vcpu->arch.last_host_tsc > max_tsc)
-					max_tsc = vcpu->arch.last_host_tsc;
-			}
-		}
-	}
-
-	/*
-	 * Sometimes, even reliable TSCs go backwards.  This happens on
-	 * platforms that reset TSC during suspend or hibernate actions, but
-	 * maintain synchronization.  We must compensate.  Fortunately, we can
-	 * detect that condition here, which happens early in CPU bringup,
-	 * before any KVM threads can be running.  Unfortunately, we can't
-	 * bring the TSCs fully up to date with real time, as we aren't yet far
-	 * enough into CPU bringup that we know how much real time has actually
-	 * elapsed; our helper function, ktime_get_boottime_ns() will be using boot
-	 * variables that haven't been updated yet.
-	 *
-	 * So we simply find the maximum observed TSC above, then record the
-	 * adjustment to TSC in each VCPU.  When the VCPU later gets loaded,
-	 * the adjustment will be applied.  Note that we accumulate
-	 * adjustments, in case multiple suspend cycles happen before some VCPU
-	 * gets a chance to run again.  In the event that no KVM threads get a
-	 * chance to run, we will miss the entire elapsed period, as we'll have
-	 * reset last_host_tsc, so VCPUs will not have the TSC adjusted and may
-	 * loose cycle time.  This isn't too big a deal, since the loss will be
-	 * uniform across all VCPUs (not to mention the scenario is extremely
-	 * unlikely). It is possible that a second hibernate recovery happens
-	 * much faster than a first, causing the observed TSC here to be
-	 * smaller; this would require additional padding adjustment, which is
-	 * why we set last_host_tsc to the local tsc observed here.
-	 *
-	 * N.B. - this code below runs only on platforms with reliable TSC,
-	 * as that is the only way backwards_tsc is set above.  Also note
-	 * that this runs for ALL vcpus, which is not a bug; all VCPUs should
-	 * have the same delta_cyc adjustment applied if backwards_tsc
-	 * is detected.  Note further, this adjustment is only done once,
-	 * as we reset last_host_tsc on all VCPUs to stop this from being
-	 * called multiple times (one for each physical CPU bringup).
-	 *
-	 * Platforms with unreliable TSCs don't have to deal with this, they
-	 * will be compensated by the logic in vcpu_load, which sets the TSC to
-	 * catchup mode.  This will catchup all VCPUs to real time, but cannot
-	 * guarantee that they stay in perfect synchronization.
-	 */
-	if (backwards_tsc) {
-		u64 delta_cyc = max_tsc - local_tsc;
-		list_for_each_entry(kvm, &vm_list, vm_list) {
-			kvm->arch.backwards_tsc_observed = true;
-			kvm_for_each_vcpu(i, vcpu, kvm) {
-				vcpu->arch.tsc_offset_adjustment += delta_cyc;
-				vcpu->arch.last_host_tsc = local_tsc;
-				kvm_make_request(KVM_REQ_MASTERCLOCK_UPDATE, vcpu);
-			}
-
-			/*
-			 * We have to disable TSC offset matching.. if you were
-			 * booting a VM while issuing an S4 host suspend....
-			 * you may have some problem.  Solving this issue is
-			 * left as an exercise to the reader.
-			 */
-			kvm->arch.last_tsc_nsec = 0;
-			kvm->arch.last_tsc_write = 0;
-		}
-
-	}
-	return 0;
-}
-
-void kvm_arch_hardware_disable(void)
-{
-	static_call(kvm_x86_hardware_disable)();
-	drop_user_return_notifiers();
-}
 
 bool kvm_vcpu_is_reset_bsp(struct kvm_vcpu *vcpu)
 {
