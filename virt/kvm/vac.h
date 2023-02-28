@@ -5,6 +5,8 @@
 
 #ifdef CONFIG_KVM_GENERIC_HARDWARE_ENABLING
 
+#include "x86_vac.h" 
+
 #include <linux/kvm_host.h>
 #include <linux/syscore_ops.h>
 

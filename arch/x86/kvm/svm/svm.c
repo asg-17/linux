@@ -4697,14 +4697,17 @@ static int svm_vm_init(struct kvm *kvm)
 	return 0;
 }
 
+static struct vac_x86_ops svm_vac_x86_ops __initdata = {
+	.hardware_enable = svm_hardware_enable,
+	.hardware_disable = svm_hardware_disable,
+};
+
 static struct kvm_x86_ops svm_x86_ops __initdata = {
 	.name = KBUILD_MODNAME,
 
 	.check_processor_compatibility = svm_check_processor_compat,
 
 	.hardware_unsetup = svm_hardware_unsetup,
-	.hardware_enable = svm_hardware_enable,
-	.hardware_disable = svm_hardware_disable,
 	.has_emulated_msr = svm_has_emulated_msr,
 
 	.vcpu_create = svm_vcpu_create,
@@ -5090,6 +5093,7 @@ static struct kvm_x86_init_ops svm_init_ops __initdata = {
 	.hardware_setup = svm_hardware_setup,
 
 	.runtime_ops = &svm_x86_ops,
+	.vac_ops = &svm_vac_x86_ops,
 	.pmu_ops = &amd_pmu_ops,
 };
 
