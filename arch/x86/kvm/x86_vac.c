@@ -1,13 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0
 
-#include "x86_vac.h"
+#include <linux/static_call.h>
 #include <asm/msr.h>
+
+#include "x86_vac.h"
 
 u32 __read_mostly kvm_uret_msrs_list[KVM_MAX_NR_USER_RETURN_MSRS];
 struct kvm_user_return_msrs __percpu *user_return_msrs;
+struct vac_x86_ops vac_x86_ops __read_mostly;
 
 u32 __read_mostly kvm_nr_uret_msrs;
 EXPORT_SYMBOL_GPL(kvm_nr_uret_msrs);
+
+#define VAC_X86_OP(func)					     \
+	DEFINE_STATIC_CALL_NULL(vac_x86_##func,			     \
+				*(((struct vac_x86_ops *)0)->func));
+#define VAC_X86_OP_OPTIONAL VAC_X86_OP
+#define VAC_X86_OP_OPTIONAL_RET0 VAC_X86_OP
+#include "vac-x86-ops.h"
 
 static void kvm_on_user_return(struct user_return_notifier *urn)
 {
@@ -98,11 +108,60 @@ int kvm_set_user_return_msr(unsigned int slot, u64 value, u64 mask)
 }
 EXPORT_SYMBOL_GPL(kvm_set_user_return_msr);
 
-void drop_user_return_notifiers(void)
+static inline void drop_user_return_notifiers(void)
 {
 	unsigned int cpu = smp_processor_id();
 	struct kvm_user_return_msrs *msrs = per_cpu_ptr(user_return_msrs, cpu);
 
 	if (msrs->registered)
 		kvm_on_user_return(&msrs->urn);
+}
+
+static void kvm_user_return_msr_cpu_online(void)
+{
+	unsigned int cpu = smp_processor_id();
+	struct kvm_user_return_msrs *msrs = per_cpu_ptr(user_return_msrs, cpu);
+	u64 value;
+	int i;
+
+	for (i = 0; i < kvm_nr_uret_msrs; ++i) {
+		rdmsrl_safe(kvm_uret_msrs_list[i], &value);
+		msrs->values[i].host = value;
+		msrs->values[i].curr = value;
+	}
+}
+
+int kvm_arch_hardware_enable(void)
+{
+	int ret;
+
+	kvm_user_return_msr_cpu_online();
+
+	ret = static_call(vac_x86_hardware_enable)();
+	if (ret != 0)
+		return ret;
+
+	// TODO: Handle the unstable TSC case
+
+	return 0;
+}
+
+void kvm_arch_hardware_disable(void)
+{
+	static_call(vac_x86_hardware_disable)();
+	drop_user_return_notifiers();
+}
+
+void vac_x86_ops_init(void)
+{
+#define __VAC_X86_OP(func) \
+	static_call_update(vac_x86_##func, vac_x86_ops.func);
+#define VAC_X86_OP(func) \
+	WARN_ON(!vac_x86_ops.func); __VAC_X86_OP(func)
+#define VAC_X86_OP_OPTIONAL __VAC_X86_OP
+#define VAC_X86_OP_OPTIONAL_RET0(func) \
+	static_call_update(vac_x86_##func, (void *)vac_x86_ops.func ? : \
+					   (void *)__static_call_return0);
+#include "vac-x86-ops.h"
+#undef __VAC_X86_OP
 }
