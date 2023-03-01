@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#include "x86_vac.h"
+#include <linux/static_call.h>
 #include <asm/msr.h>
+#include "x86_vac.h"
 
 struct vac_x86_ops vac_x86_ops __read_mostly;
 #define VAC_X86_OP(func)					     \
