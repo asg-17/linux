@@ -177,4 +177,15 @@ struct syscore_ops kvm_syscore_ops = {
 	.resume = kvm_resume,
 };
 
+#ifdef CONFIG_HAVE_KVM_VAC
+
+EXPORT_SYMBOL_GPL(kvm_reboot_notifier);
+EXPORT_SYMBOL_GPL(kvm_syscore_ops);
+EXPORT_SYMBOL_GPL(hardware_enable_all);
+EXPORT_SYMBOL_GPL(hardware_disable_all);
+EXPORT_SYMBOL_GPL(kvm_online_cpu);
+EXPORT_SYMBOL_GPL(kvm_offline_cpu);
+
+#endif
+
 #endif
