@@ -18,8 +18,19 @@ menuconfig VIRTUALIZATION
 
 if VIRTUALIZATION
 
+config KVM_VAC
+	tristate "Virtualization Accelerator Component (VAC)"
+	select HAVE_KVM_VAC
+	select KVM_GENERIC_HARDWARE_ENABLING
+	help
+	  Support running multiple KVM modules on the same host. If VAC is not
+	  selected to run as a separate module, it will run as part of KVM, and
+          the system will only support a single KVM.
+
+
 config KVM
 	tristate "Kernel-based Virtual Machine (KVM) support"
+	depends on KVM_VAC
 	depends on HAVE_KVM
 	depends on HIGH_RES_TIMERS
 	depends on X86_LOCAL_APIC
