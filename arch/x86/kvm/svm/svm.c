@@ -5,6 +5,7 @@
 #include "irq.h"
 #include "mmu.h"
 #include "kvm_cache_regs.h"
+#include "vac.h"
 #include "x86.h"
 #include "smm.h"
 #include "cpuid.h"
@@ -52,9 +53,6 @@
 
 #include "kvm_onhyperv.h"
 #include "svm_onhyperv.h"
-
-MODULE_AUTHOR("Qumranet");
-MODULE_LICENSE("GPL");
 
 #ifdef MODULE
 static const struct x86_cpu_id svm_cpu_id[] = {
@@ -4803,8 +4801,15 @@ static int svm_vm_init(struct kvm *kvm)
 	return 0;
 }
 
+static void svm_module_exit(void)
+{
+	kvm_exit();
+}
+
 static struct kvm_x86_ops svm_x86_ops __initdata = {
 	.name = KBUILD_MODNAME,
+
+	.module_exit = svm_module_exit,
 
 	.check_processor_compatibility = svm_check_processor_compat,
 
@@ -5217,7 +5222,7 @@ static struct kvm_x86_init_ops svm_init_ops __initdata = {
 	.pmu_ops = &amd_pmu_ops,
 };
 
-static int __init svm_init(void)
+int __init svm_init(void)
 {
 	int r;
 
@@ -5245,12 +5250,3 @@ err_kvm_init:
 	kvm_x86_vendor_exit();
 	return r;
 }
-
-static void __exit svm_exit(void)
-{
-	kvm_exit();
-	kvm_x86_vendor_exit();
-}
-
-module_init(svm_init)
-module_exit(svm_exit)
