@@ -5,6 +5,9 @@
 #include "hyperv.h"
 #include "vmx.h"
 
+void vmclear_error(struct vmcs *vmcs, u64 phys_addr) {} // XXX Vac
+void invept_error(unsigned long ext, u64 eptp, gpa_t gpa) {}  // XXX VAC
+
 static DEFINE_PER_CPU(struct vmcs *, vmxarea);
 /*
  * We maintain a per-CPU linked-list of VMCS loaded on that CPU. This is needed
