@@ -9,12 +9,11 @@ endif
 
 include $(srctree)/virt/kvm/Makefile.kvm
 
+xvac-y			:= vac0.o vac.o svm/vac.o vmx/vac.o
 kvm-y			+= x86.o emulate.o i8259.o irq.o lapic.o \
 			   i8254.o ioapic.o irq_comm.o cpuid.o pmu.o mtrr.o \
 			   hyperv.o debugfs.o mmu/mmu.o mmu/page_track.o \
 			   mmu/spte.o
-
-kvm-y                   += vac.o vmx/vac.o svm/vac.o
 
 ifdef CONFIG_HYPERV
 kvm-y			+= kvm_onhyperv.o
@@ -35,6 +34,7 @@ ifdef CONFIG_HYPERV
 kvm-$(CONFIG_KVM_AMD)	+= svm/svm_onhyperv.o
 endif
 
+obj-$(CONFIG_VAC)	+= xvac.o
 obj-$(CONFIG_KVM)	+= kvm.o
 
 AFLAGS_svm/vmenter.o    := -iquote $(obj)

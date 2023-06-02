@@ -6,6 +6,11 @@
 #include <linux/percpu.h>
 #include <linux/mutex.h>
 
+DEFINE_PER_CPU(cpumask_var_t, cpu_kick_mask);
+EXPORT_SYMBOL(cpu_kick_mask);
+
+DEFINE_PER_CPU(struct kvm_vcpu *, kvm_running_vcpu);
+
 #ifdef CONFIG_KVM_GENERIC_HARDWARE_ENABLING
 DEFINE_MUTEX(vac_lock);
 

@@ -176,6 +176,13 @@ module_param(vector_hashing, bool, S_IRUGO);
 bool __read_mostly enable_vmware_backdoor = false;
 module_param(enable_vmware_backdoor, bool, S_IRUGO);
 
+/* allow nested virtualization in KVM */
+int __read_mostly nested = true;
+module_param(nested, int, S_IRUGO);
+
+bool __read_mostly vnmi = true;
+module_param(vnmi, bool, S_IRUGO);
+
 /*
  * Flags to manipulate forced emulation behavior (any non-zero value will
  * enable forced emulation).
@@ -408,19 +415,6 @@ int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
 	kvm_lapic_set_base(vcpu, msr_info->data);
 	kvm_recalculate_apic_map(vcpu->kvm);
 	return 0;
-}
-
-/*
- * Handle a fault on a hardware virtualization (VMX or SVM) instruction.
- *
- * Hardware virtualization extension instructions may fault if a reboot turns
- * off virtualization while processes are running.  Usually after catching the
- * fault we just panic; during reboot instead the instruction is ignored.
- */
-noinstr void kvm_spurious_fault(void)
-{
-	/* Fault while not rebooting.  We want the trace. */
-	BUG_ON(!kvm_rebooting);
 }
 
 #define EXCPT_BENIGN		0
@@ -13417,9 +13411,6 @@ int kvm_sev_es_string_io(struct kvm_vcpu *vcpu, unsigned int size,
 
 static int __init kvm_x86_init(void)
 {
-	// TODO: Remove this when VAC is made into a module
-	vac_init();
-
 	kvm_mmu_x86_module_init();
 	mitigate_smt_rsb &= boot_cpu_has_bug(X86_BUG_SMT_RSB) && cpu_smt_possible();
 
