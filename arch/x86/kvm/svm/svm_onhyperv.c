@@ -4,14 +4,13 @@
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#include <linux/kvm_host.h>
-
 #include <asm/mshyperv.h>
 
 #include "svm.h"
 #include "svm_ops.h"
 
 #include "hyperv.h"
+#include "kvm_host.h"
 #include "kvm_onhyperv.h"
 #include "svm_onhyperv.h"
 

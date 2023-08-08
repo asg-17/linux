@@ -11,11 +11,11 @@
 
 #include <kvm/iodev.h>
 
-#include <linux/kvm_host.h>
 #include <linux/slab.h>
 #include <linux/kvm.h>
 
 #include "coalesced_mmio.h"
+#include "kvm_host.h"
 
 static inline struct kvm_coalesced_mmio_dev *to_mmio(struct kvm_io_device *dev)
 {

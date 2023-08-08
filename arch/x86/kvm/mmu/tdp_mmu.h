@@ -3,8 +3,7 @@
 #ifndef __KVM_X86_MMU_TDP_MMU_H
 #define __KVM_X86_MMU_TDP_MMU_H
 
-#include <linux/kvm_host.h>
-
+#include "kvm_host.h"
 #include "spte.h"
 
 int kvm_mmu_init_tdp_mmu(struct kvm *kvm);

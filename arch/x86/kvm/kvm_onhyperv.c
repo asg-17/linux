@@ -4,10 +4,10 @@
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#include <linux/kvm_host.h>
 #include <asm/mshyperv.h>
 
 #include "hyperv.h"
+#include "kvm_host.h"
 #include "kvm_onhyperv.h"
 
 struct kvm_hv_tlb_range {

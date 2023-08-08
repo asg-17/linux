@@ -25,10 +25,10 @@
 #include "kvm_cache_regs.h"
 #include "smm.h"
 #include "kvm_emulate.h"
+#include "kvm_host.h"
 #include "cpuid.h"
 #include "spte.h"
 
-#include <linux/kvm_host.h>
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/mm.h>
