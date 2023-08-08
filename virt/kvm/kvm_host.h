@@ -43,7 +43,7 @@
 #include "kvm_types.h"
 
 #include <asm/kvm_host.h>
-#include <linux/kvm_dirty_ring.h>
+#include "kvm_dirty_ring.h"
 
 #ifndef KVM_MAX_VCPU_IDS
 #define KVM_MAX_VCPU_IDS KVM_MAX_VCPUS
