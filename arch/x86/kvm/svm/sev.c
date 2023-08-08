@@ -8,7 +8,6 @@
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#include <linux/kvm_types.h>
 #include <linux/kernel.h>
 #include <linux/highmem.h>
 #include <linux/psp.h>
