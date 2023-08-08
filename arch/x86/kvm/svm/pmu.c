@@ -12,8 +12,8 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/types.h>
-#include <linux/kvm_host.h>
 #include <linux/perf_event.h>
+#include "kvm_host.h"
 #include "x86.h"
 #include "cpuid.h"
 #include "lapic.h"

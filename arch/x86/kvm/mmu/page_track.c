@@ -12,9 +12,9 @@
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#include <linux/kvm_host.h>
 #include <linux/rculist.h>
 
+#include "kvm_host.h"
 #include <asm/kvm_page_track.h>
 
 #include "mmu.h"

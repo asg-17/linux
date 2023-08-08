@@ -2,12 +2,12 @@
 #ifndef ARCH_X86_KVM_X86_H
 #define ARCH_X86_KVM_X86_H
 
-#include <linux/kvm_host.h>
 #include <asm/fpu/xstate.h>
 #include <asm/mce.h>
 #include <asm/pvclock.h>
 #include "kvm_cache_regs.h"
 #include "kvm_emulate.h"
+#include "kvm_host.h"
 
 struct kvm_caps {
 	/* control of guest tsc rate supported? */

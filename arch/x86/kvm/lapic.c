@@ -17,7 +17,6 @@
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#include <linux/kvm_host.h>
 #include <linux/kvm.h>
 #include <linux/mm.h>
 #include <linux/highmem.h>
@@ -39,6 +38,7 @@
 #include "kvm_cache_regs.h"
 #include "irq.h"
 #include "ioapic.h"
+#include "kvm_host.h"
 #include "trace.h"
 #include "x86.h"
 #include "cpuid.h"

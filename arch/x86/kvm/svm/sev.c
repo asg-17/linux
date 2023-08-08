@@ -9,7 +9,6 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kvm_types.h>
-#include <linux/kvm_host.h>
 #include <linux/kernel.h>
 #include <linux/highmem.h>
 #include <linux/psp.h>
@@ -24,6 +23,7 @@
 #include <asm/trapnr.h>
 #include <asm/fpu/xcr.h>
 
+#include "kvm_host.h"
 #include "mmu.h"
 #include "x86.h"
 #include "svm.h"
