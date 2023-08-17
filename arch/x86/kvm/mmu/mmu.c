@@ -53,7 +53,7 @@
 #include <asm/io.h>
 #include <asm/set_memory.h>
 #include <asm/vmx.h>
-#include <asm/kvm_page_track.h>
+#include "kvm_page_track.h"
 #include "trace.h"
 
 extern bool itlb_multihit_kvm_mitigation;

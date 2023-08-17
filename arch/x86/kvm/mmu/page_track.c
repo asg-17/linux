@@ -15,7 +15,7 @@
 #include <linux/rculist.h>
 
 #include "kvm_host.h"
-#include <asm/kvm_page_track.h>
+#include "kvm_page_track.h"
 
 #include "mmu.h"
 #include "mmu_internal.h"
