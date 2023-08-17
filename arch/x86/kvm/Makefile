@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 
-ccflags-y += -I $(srctree)/arch/x86/kvm -I $(srctree)/arch/x86/kvm/include -I $(srctree)/virt/kvm
+ccflags-y += -I $(srctree)/arch/x86/kvm -I $(srctree)/virt/kvm -I $(srctree)/arch/x86/kvm/include
 ccflags-$(CONFIG_KVM_WERROR) += -Werror
 
 ifeq ($(CONFIG_FRAME_POINTER),y)

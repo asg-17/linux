@@ -1781,7 +1781,7 @@ extern struct kvm_x86_ops kvm_x86_ops;
 	DECLARE_STATIC_CALL(kvm_x86_##func, *(((struct kvm_x86_ops *)0)->func));
 #define KVM_X86_OP_OPTIONAL KVM_X86_OP
 #define KVM_X86_OP_OPTIONAL_RET0 KVM_X86_OP
-#include <asm/kvm-x86-ops.h>
+#include "kvm-x86-ops.h"
 
 int kvm_x86_vendor_init(struct kvm_x86_init_ops *ops);
 void kvm_x86_vendor_exit(void);
