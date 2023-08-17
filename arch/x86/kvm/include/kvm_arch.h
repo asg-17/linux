@@ -19,7 +19,7 @@
 
 #include <linux/kvm.h>
 #include <linux/kvm_para.h>
-#include <linux/kvm_types.h>
+#include "kvm_types.h"
 #include <linux/perf_event.h>
 #include <linux/pvclock_gtod.h>
 #include <linux/clocksource.h>
@@ -34,7 +34,7 @@
 #include <asm/msr-index.h>
 #include <asm/asm.h>
 #include "kvm_page_track.h"
-#include <asm/kvm_vcpu_regs.h>
+#include "kvm_vcpu_regs.h"
 #include <asm/hyperv-tlfs.h>
 
 #define __KVM_HAVE_ARCH_VCPU_DEBUGFS
