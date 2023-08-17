@@ -17,7 +17,6 @@
 #include <linux/delay.h>
 #include <linux/eventfd.h>
 #include <linux/mutex.h>
-#include <linux/kvm_host.h>
 #include <linux/vfio.h>
 #include <linux/hashtable.h>
 
