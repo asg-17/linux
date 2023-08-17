@@ -11,7 +11,7 @@
 
 #include "kvm_host.h"
 #include <linux/kvm.h>
-#include <linux/kvm_irqfd.h>
+#include "kvm_irqfd.h"
 #include <linux/workqueue.h>
 #include <linux/syscalls.h>
 #include <linux/wait.h>
