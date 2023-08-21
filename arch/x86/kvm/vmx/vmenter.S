@@ -2,7 +2,7 @@
 #include <linux/linkage.h>
 #include <asm/asm.h>
 #include <asm/bitsperlong.h>
-#include <asm/kvm_vcpu_regs.h>
+#include "include/kvm_vcpu_regs.h"
 #include <asm/nospec-branch.h>
 #include <asm/percpu.h>
 #include <asm/segment.h>
