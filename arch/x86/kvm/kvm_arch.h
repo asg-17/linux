@@ -33,7 +33,7 @@
 #include <asm/msr-index.h>
 #include <asm/asm.h>
 #include <asm/kvm_page_track.h>
-#include <asm/kvm_vcpu_regs.h>
+#include "kvm_vcpu_regs.h"
 #include <asm/hyperv-tlfs.h>
 
 #define __KVM_HAVE_ARCH_VCPU_DEBUGFS
