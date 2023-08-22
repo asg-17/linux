@@ -4,7 +4,7 @@
  *
  * Copyright 2019 Red Hat, Inc.
  */
-#include <linux/kvm_host.h>
+#include "kvm_host.h"
 #include <linux/kvm.h>
 #include <linux/vmalloc.h>
 #include <linux/kvm_dirty_ring.h>
