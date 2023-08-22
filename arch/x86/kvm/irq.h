@@ -12,7 +12,7 @@
 
 #include <linux/mm_types.h>
 #include <linux/hrtimer.h>
-#include <linux/kvm_host.h>
+#include "kvm_host.h"
 #include <linux/spinlock.h>
 
 #include <kvm/iodev.h>

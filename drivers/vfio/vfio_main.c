@@ -17,7 +17,7 @@
 #include <linux/idr.h>
 #include <linux/iommu.h>
 #ifdef CONFIG_HAVE_KVM
-#include <linux/kvm_host.h>
+#include <linux/kvm_host_global.h>
 #endif
 #include <linux/list.h>
 #include <linux/miscdevice.h>

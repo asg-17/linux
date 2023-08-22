@@ -14,7 +14,7 @@
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <linux/nmi.h>
-#include <linux/kvm_host.h>
+#include <linux/kvm_host_global.h>
 
 #include <asm/cpufeature.h>
 #include <asm/hardirq.h>
