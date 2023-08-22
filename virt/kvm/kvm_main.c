@@ -67,7 +67,7 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/kvm.h>
 
-#include <linux/kvm_dirty_ring.h>
+#include "kvm_dirty_ring.h"
 
 
 /* Worst case buffer size needed for holding an integer. */
