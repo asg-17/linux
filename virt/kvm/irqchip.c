@@ -12,7 +12,7 @@
  *   Alexander Graf <agraf@suse.de>
  */
 
-#include <linux/kvm_host.h>
+#include "kvm_host.h"
 #include <linux/slab.h>
 #include <linux/srcu.h>
 #include <linux/export.h>

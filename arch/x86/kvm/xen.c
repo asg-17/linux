@@ -13,7 +13,7 @@
 #include "lapic.h"
 
 #include <linux/eventfd.h>
-#include <linux/kvm_host.h>
+#include "kvm_host.h"
 #include <linux/sched/stat.h>
 
 #include <xen/interface/xen.h>

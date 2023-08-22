@@ -13,7 +13,7 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/lockdep.h>
-#include <linux/kvm_host.h>
+#include "kvm_host.h"
 #include <linux/rculist.h>
 
 #include "mmu.h"
