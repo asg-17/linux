@@ -4,7 +4,7 @@
 
 #include <linux/types.h>
 #include "kvm_host.h"
-#include <asm/kvm_host.h>
+#include "kvm_arch.h"
 
 #ifdef CONFIG_KVM_PROVE_MMU
 #define KVM_MMU_WARN_ON(x) WARN_ON_ONCE(x)

@@ -41,7 +41,7 @@
 
 #include "../../virt/kvm/kvm_types.h"
 
-#include <asm/kvm_host.h>
+#include "../../arch/x86/kvm/kvm_arch.h"
 
 /* Two fragments for cross MMIO pages. */
 #define KVM_MAX_MMIO_FRAGMENTS	2
