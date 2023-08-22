@@ -15,7 +15,7 @@
 #include "kvm_host.h"
 #include <linux/spinlock.h>
 
-#include <kvm/iodev.h>
+#include "iodev.h"
 #include "lapic.h"
 
 #define PIC_NUM_PINS 16

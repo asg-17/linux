@@ -13,7 +13,7 @@
  *   Yaniv Kamay  <yaniv@qumranet.com>
  */
 
-#include <kvm/iodev.h>
+#include "iodev.h"
 
 #include "kvm_host.h"
 #include <linux/kvm.h>

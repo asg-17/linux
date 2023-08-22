@@ -9,7 +9,7 @@
  *
  */
 
-#include <kvm/iodev.h>
+#include "iodev.h"
 
 #include "kvm_host.h"
 #include <linux/slab.h>
