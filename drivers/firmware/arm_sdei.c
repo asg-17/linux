@@ -16,7 +16,7 @@
 #include <linux/hardirq.h>
 #include <linux/kernel.h>
 #include <linux/kprobes.h>
-#include <linux/kvm_host.h>
+#include <linux/kvm_host_global.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/notifier.h>

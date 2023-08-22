@@ -15,7 +15,7 @@
 #ifndef __SVM_SVM_H
 #define __SVM_SVM_H
 
-#include <linux/kvm_types.h>
+#include "kvm_types.h"
 #include "kvm_host.h"
 #include <linux/bits.h>
 

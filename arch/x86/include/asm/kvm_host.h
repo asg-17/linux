@@ -8,6 +8,7 @@
 #ifndef _ASM_X86_KVM_HOST_H
 #define _ASM_X86_KVM_HOST_H
 
+#include "kvm_types.h"
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/mmu_notifier.h>
@@ -19,7 +20,6 @@
 
 #include <linux/kvm.h>
 #include <linux/kvm_para.h>
-#include <linux/kvm_types.h>
 #include <linux/perf_event.h>
 #include <linux/pvclock_gtod.h>
 #include <linux/clocksource.h>

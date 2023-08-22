@@ -14,7 +14,7 @@
 #include <linux/list.h>
 #include <linux/ctype.h>
 #include <linux/bitops.h>
-#include <linux/kvm_host.h>
+#include <linux/kvm_host_global.h>
 #include <linux/module.h>
 #include <linux/uuid.h>
 #include <asm/kvm.h>

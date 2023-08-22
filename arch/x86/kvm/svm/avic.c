@@ -14,7 +14,7 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#include <linux/kvm_types.h>
+#include "kvm_types.h"
 #include <linux/hashtable.h>
 #include <linux/amd-iommu.h>
 #include "kvm_host.h"

@@ -3,7 +3,7 @@
 #ifndef __KVM_IODEV_H__
 #define __KVM_IODEV_H__
 
-#include <linux/kvm_types.h>
+#include "kvm_types.h"
 #include <linux/errno.h>
 
 struct kvm_io_device;

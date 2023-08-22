@@ -39,7 +39,7 @@
 #include <linux/kvm.h>
 #include <linux/kvm_para.h>
 
-#include <linux/kvm_types.h>
+#include "../../virt/kvm/kvm_types.h"
 
 #include <asm/kvm_host.h>
 
