@@ -2,11 +2,9 @@
 #ifndef __KVM_X86_LAPIC_H
 #define __KVM_X86_LAPIC_H
 
-#include <kvm/iodev.h>
-
-#include "kvm_host.h"
-
 #include "hyperv.h"
+#include "kvm_host.h"
+#include "kvm_iodev.h"
 #include "smm.h"
 
 #define KVM_APIC_INIT		0

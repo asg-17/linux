@@ -9,7 +9,6 @@
  *	Gregory Haskins <ghaskins@novell.com>
  */
 
-#include "kvm_host.h"
 #include <linux/kvm.h>
 #include <linux/workqueue.h>
 #include <linux/syscalls.h>
@@ -23,8 +22,9 @@
 #include <linux/slab.h>
 #include <linux/seqlock.h>
 #include <linux/irqbypass.h>
-#include <kvm/iodev.h>
 
+#include "kvm_host.h"
+#include "kvm_iodev.h"
 #include "kvm_irqfd.h"
 #include "kvm_trace.h"
 

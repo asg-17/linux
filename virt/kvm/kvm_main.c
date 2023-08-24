@@ -13,9 +13,7 @@
  *   Yaniv Kamay  <yaniv@qumranet.com>
  */
 
-#include <kvm/iodev.h>
-
-#include "kvm_host.h"
+#include "kvm_iodev.h"
 #include <linux/kvm.h>
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -59,6 +57,7 @@
 
 #include "coalesced_mmio.h"
 #include "async_pf.h"
+#include "kvm_host.h"
 #include "kvm_mm.h"
 #include "vfio.h"
 

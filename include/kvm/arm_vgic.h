@@ -13,11 +13,12 @@
 #include <linux/spinlock.h>
 #include <linux/static_key.h>
 #include <linux/types.h>
-#include <kvm/iodev.h>
 #include <linux/list.h>
 #include <linux/jump_label.h>
 
 #include <linux/irqchip/arm-gic-v4.h>
+
+#include "kvm_iodev.h"
 
 #define VGIC_V3_MAX_CPUS	512
 #define VGIC_V2_MAX_CPUS	8

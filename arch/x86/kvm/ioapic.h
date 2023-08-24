@@ -3,7 +3,7 @@
 #define __KVM_IO_APIC_H
 
 #include "kvm_host.h"
-#include <kvm/iodev.h>
+#include "kvm_iodev.h"
 #include "irq.h"
 
 struct kvm;
