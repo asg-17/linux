@@ -3,9 +3,9 @@
 #include <asm/asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/bitsperlong.h>
-#include <asm/kvm_vcpu_regs.h>
 #include <asm/nospec-branch.h>
 #include "kvm-asm-offsets.h"
+#include "kvm_vcpu_regs.h"
 
 #define WORD_SIZE (BITS_PER_LONG / 8)
 
