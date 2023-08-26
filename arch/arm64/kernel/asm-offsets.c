@@ -13,7 +13,6 @@
 #include <linux/kexec.h>
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
-#include <linux/kvm_host.h>
 #include <linux/preempt.h>
 #include <linux/suspend.h>
 #include <asm/cpufeature.h>
@@ -25,6 +24,7 @@
 #include <asm/suspend.h>
 #include <linux/kbuild.h>
 #include <linux/arm-smccc.h>
+
 
 int main(void)
 {
@@ -126,6 +126,7 @@ int main(void)
   DEFINE(FTR_OVR_MASK_OFFSET,	offsetof(struct arm64_ftr_override, mask));
   BLANK();
 #ifdef CONFIG_KVM
+#ifdef TEMP_HACK
   DEFINE(VCPU_CONTEXT,		offsetof(struct kvm_vcpu, arch.ctxt));
   DEFINE(VCPU_FAULT_DISR,	offsetof(struct kvm_vcpu, arch.fault.disr_el1));
   DEFINE(VCPU_HCR_EL2,		offsetof(struct kvm_vcpu, arch.hcr_el2));
@@ -147,6 +148,7 @@ int main(void)
   DEFINE(NVHE_INIT_HCR_EL2,	offsetof(struct kvm_nvhe_init_params, hcr_el2));
   DEFINE(NVHE_INIT_VTTBR,	offsetof(struct kvm_nvhe_init_params, vttbr));
   DEFINE(NVHE_INIT_VTCR,	offsetof(struct kvm_nvhe_init_params, vtcr));
+#endif
 #endif
 #ifdef CONFIG_CPU_PM
   DEFINE(CPU_CTX_SP,		offsetof(struct cpu_suspend_ctx, sp));
