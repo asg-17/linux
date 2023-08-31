@@ -8,12 +8,13 @@
 #define __ARM64_KVM_HYP_DEBUG_SR_H__
 
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 
 #include <asm/debug-monitors.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 #define read_debug(r,n)		read_sysreg(r##n##_el1)
 #define write_debug(v,r,n)	write_sysreg(v, r##n##_el1)

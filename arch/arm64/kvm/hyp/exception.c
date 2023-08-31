@@ -11,10 +11,11 @@
  */
 
 #include <hyp/adjust_pc.h>
-#include <linux/kvm_host.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_mmu.h>
-#include <asm/kvm_nested.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_mmu.h"
+#include "kvm_nested.h"
 
 #if !defined (__KVM_NVHE_HYPERVISOR__) && !defined (__KVM_VHE_HYPERVISOR__)
 #error Hypervisor code only!

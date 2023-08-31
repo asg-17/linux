@@ -8,16 +8,17 @@
 
 #include <asm/pgtable-types.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
 #include <asm/kvm_host.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 
 #include <nvhe/ffa.h>
 #include <nvhe/mem_protect.h>
 #include <nvhe/mm.h>
 #include <nvhe/pkvm.h>
 #include <nvhe/trap_handler.h>
+
+#include "kvm_emulate.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 DEFINE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
 

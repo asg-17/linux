@@ -4,9 +4,8 @@
  * Author: Christoffer Dall <c.dall@virtualopensystems.com>
  */
 
-#include <linux/kvm_host.h>
-#include <asm/kvm_emulate.h>
-
+#include "kvm_emulate.h"
+#include "kvm_host.h"
 #include "kvm_trace.h"
 #include "trace.h"
 

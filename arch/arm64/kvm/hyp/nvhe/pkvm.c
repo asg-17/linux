@@ -4,13 +4,14 @@
  * Author: Fuad Tabba <tabba@google.com>
  */
 
-#include <linux/kvm_host.h>
 #include <linux/mm.h>
 #include <nvhe/fixed_config.h>
 #include <nvhe/mem_protect.h>
 #include <nvhe/memory.h>
 #include <nvhe/pkvm.h>
 #include <nvhe/trap_handler.h>
+
+#include "kvm_host.h"
 
 /* Used by icache_is_vpipt(). */
 unsigned long __icache_flags;

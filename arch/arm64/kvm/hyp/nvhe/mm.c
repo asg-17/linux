@@ -4,9 +4,6 @@
  * Author: Quentin Perret <qperret@google.com>
  */
 
-#include <linux/kvm_host.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_pgtable.h>
 #include <asm/kvm_pkvm.h>
 #include <asm/spectre.h>
@@ -17,6 +14,10 @@
 #include <nvhe/mem_protect.h>
 #include <nvhe/mm.h>
 #include <nvhe/spinlock.h>
+
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 struct kvm_pgtable pkvm_pgtable;
 hyp_spinlock_t pkvm_pgd_lock;

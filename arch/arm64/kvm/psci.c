@@ -6,15 +6,15 @@
 
 #include <linux/arm-smccc.h>
 #include <linux/preempt.h>
-#include <linux/kvm_host.h>
 #include <linux/uaccess.h>
 #include <linux/wait.h>
 
 #include <asm/cputype.h>
-#include <asm/kvm_emulate.h>
 
 #include "arm_hypercalls.h"
 #include "arm_psci.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
 
 /*
  * This is an implementation of the Power State Coordination Interface

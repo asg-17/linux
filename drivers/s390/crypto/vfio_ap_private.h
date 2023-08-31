@@ -17,11 +17,11 @@
 #include <linux/delay.h>
 #include <linux/eventfd.h>
 #include <linux/mutex.h>
-#include <linux/kvm_host.h>
 #include <linux/vfio.h>
 #include <linux/hashtable.h>
 
 #include "ap_bus.h"
+#include "kvm_host.h"
 
 #define VFIO_AP_MODULE_NAME "vfio_ap"
 #define VFIO_AP_DRV_NAME "vfio_ap"

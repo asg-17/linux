@@ -2,10 +2,10 @@
 #ifndef __KVM_HYP_MEMORY_H
 #define __KVM_HYP_MEMORY_H
 
-#include <asm/kvm_mmu.h>
 #include <asm/page.h>
-
 #include <linux/types.h>
+
+#include "kvm_mmu.h"
 
 struct hyp_page {
 	unsigned short refcount;

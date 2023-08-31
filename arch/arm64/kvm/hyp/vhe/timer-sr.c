@@ -4,7 +4,7 @@
  * Author: Marc Zyngier <marc.zyngier@arm.com>
  */
 
-#include <asm/kvm_hyp.h>
+#include "kvm_hyp.h"
 
 void __kvm_timer_set_cntvoff(u64 cntvoff)
 {

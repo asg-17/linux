@@ -12,7 +12,6 @@
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/nospec.h>
-#include <linux/kvm_host.h>
 #include <linux/module.h>
 #include <linux/stddef.h>
 #include <linux/string.h>
@@ -22,11 +21,12 @@
 #include <linux/uaccess.h>
 #include <asm/fpsimd.h>
 #include <asm/kvm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_nested.h>
 #include <asm/sigcontext.h>
 
 #include "arm_hypercalls.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_nested.h"
 #include "trace.h"
 
 const struct _kvm_stats_desc kvm_vm_stats_desc[] = {

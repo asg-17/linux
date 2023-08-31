@@ -7,13 +7,14 @@
 #include <hyp/sysreg-sr.h>
 
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 
 #include <asm/kprobes.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_nested.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_nested.h"
 
 /*
  * VHE: Host and guest must save mdscr_el1 and sp_el0 (and the PC and

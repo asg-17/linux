@@ -7,12 +7,13 @@
  */
 #include <linux/irqflags.h>
 #include <linux/sched.h>
-#include <linux/kvm_host.h>
 #include <asm/fpsimd.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 #include <asm/sysreg.h>
+
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 void kvm_vcpu_unshare_task_fp(struct kvm_vcpu *vcpu)
 {

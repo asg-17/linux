@@ -3,9 +3,9 @@
 # Makefile for Kernel-based Virtual Machine module
 #
 
-ccflags-y += -I $(srctree)/$(src)
-
 include $(srctree)/virt/kvm/Makefile.kvm
+
+ccflags-y += -I $(srctree)/$(src)
 
 obj-$(CONFIG_KVM) += kvm.o
 obj-$(CONFIG_KVM) += hyp/

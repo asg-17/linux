@@ -2,7 +2,7 @@
 #ifndef __ARM64_KVM_NESTED_H
 #define __ARM64_KVM_NESTED_H
 
-#include <linux/kvm_host.h>
+#include "kvm_host.h"
 
 static inline bool vcpu_has_nv(const struct kvm_vcpu *vcpu)
 {

@@ -11,7 +11,6 @@
 #include <hyp/fault.h>
 
 #include <linux/arm-smccc.h>
-#include <linux/kvm_host.h>
 #include <linux/types.h>
 #include <linux/jump_label.h>
 #include <uapi/linux/psci.h>
@@ -21,15 +20,16 @@
 #include <asm/extable.h>
 #include <asm/kprobes.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
-#include <asm/kvm_nested.h>
 #include <asm/fpsimd.h>
 #include <asm/debug-monitors.h>
 #include <asm/processor.h>
 
 #include "arm_psci.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_emulate.h"
+#include "kvm_mmu.h"
+#include "kvm_nested.h"
 
 struct kvm_exception_table_entry {
 	int insn, fixup;

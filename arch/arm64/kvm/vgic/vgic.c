@@ -6,12 +6,11 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 #include <linux/list_sort.h>
 #include <linux/nospec.h>
 
-#include <asm/kvm_hyp.h>
-
+#include "kvm_host.h"
+#include "kvm_hyp.h"
 #include "vgic.h"
 
 #define CREATE_TRACE_POINTS

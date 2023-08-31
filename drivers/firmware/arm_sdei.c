@@ -16,7 +16,6 @@
 #include <linux/hardirq.h>
 #include <linux/kernel.h>
 #include <linux/kprobes.h>
-#include <linux/kvm_host.h>
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/notifier.h>
@@ -31,6 +30,8 @@
 #include <linux/slab.h>
 #include <linux/smp.h>
 #include <linux/spinlock.h>
+
+#include "kvm_host.h"
 
 /*
  * The call to use to reach the firmware.

@@ -6,9 +6,10 @@
 
 #include <linux/irqflags.h>
 
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 #include <asm/tlbflush.h>
+
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 struct tlb_inv_context {
 	unsigned long	flags;

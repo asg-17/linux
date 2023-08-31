@@ -14,7 +14,8 @@
 #include <linux/bitops.h>
 
 #include <asm/kvm_asm.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_mmu.h"
 
 unsigned int __ro_after_init kvm_arm_vmid_bits;
 static DEFINE_RAW_SPINLOCK(cpu_vmid_lock);

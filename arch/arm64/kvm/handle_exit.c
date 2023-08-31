@@ -9,19 +9,19 @@
  */
 
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 
 #include <asm/esr.h>
 #include <asm/exception.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_mmu.h>
-#include <asm/kvm_nested.h>
 #include <asm/debug-monitors.h>
 #include <asm/stacktrace/nvhe.h>
 #include <asm/traps.h>
 
 #include "arm_hypercalls.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_mmu.h"
+#include "kvm_nested.h"
 
 #define CREATE_TRACE_POINTS
 #include "trace_handle_exit.h"

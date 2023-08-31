@@ -6,13 +6,14 @@
 
 #ifndef __KVM_NVHE_MEM_PROTECT__
 #define __KVM_NVHE_MEM_PROTECT__
-#include <linux/kvm_host.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_pgtable.h>
 #include <asm/virt.h>
 #include <nvhe/pkvm.h>
 #include <nvhe/spinlock.h>
+
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 /*
  * SW bits 0-1 are reserved to track the memory ownership state of each page:

@@ -10,10 +10,11 @@
  * Author: Christoffer Dall <c.dall@virtualopensystems.com>
  */
 
-#include <linux/kvm_host.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_nested.h>
 #include <asm/esr.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_nested.h"
 
 static void pend_sync_exception(struct kvm_vcpu *vcpu)
 {

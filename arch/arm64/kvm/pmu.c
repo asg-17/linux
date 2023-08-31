@@ -3,8 +3,9 @@
  * Copyright 2019 Arm Limited
  * Author: Andrew Murray <Andrew.Murray@arm.com>
  */
-#include <linux/kvm_host.h>
 #include <linux/perf_event.h>
+
+#include "kvm_host.h"
 
 static DEFINE_PER_CPU(struct kvm_pmu_events, kvm_pmu_events);
 

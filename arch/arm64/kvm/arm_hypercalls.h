@@ -4,7 +4,7 @@
 #ifndef __KVM_ARM_HYPERCALLS_H
 #define __KVM_ARM_HYPERCALLS_H
 
-#include <asm/kvm_emulate.h>
+#include "kvm_emulate.h"
 
 int kvm_smccc_call_handler(struct kvm_vcpu *vcpu);
 

@@ -32,7 +32,6 @@
 #include <linux/irq_work.h>
 #include <linux/kernel_stat.h>
 #include <linux/kexec.h>
-#include <linux/kvm_host.h>
 
 #include <asm/alternative.h>
 #include <asm/atomic.h>
@@ -41,7 +40,6 @@
 #include <asm/cputype.h>
 #include <asm/cpu_ops.h>
 #include <asm/daifflags.h>
-#include <asm/kvm_mmu.h>
 #include <asm/mmu_context.h>
 #include <asm/numa.h>
 #include <asm/processor.h>
@@ -52,6 +50,9 @@
 #include <asm/virt.h>
 
 #include <trace/events/ipi.h>
+
+#include "kvm_host.h"
+#include "kvm_mmu.h"
 
 DEFINE_PER_CPU_READ_MOSTLY(int, cpu_number);
 EXPORT_PER_CPU_SYMBOL(cpu_number);

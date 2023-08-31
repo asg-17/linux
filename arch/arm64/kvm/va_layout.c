@@ -4,14 +4,15 @@
  * Author: Marc Zyngier <marc.zyngier@arm.com>
  */
 
-#include <linux/kvm_host.h>
 #include <linux/random.h>
 #include <linux/memblock.h>
 #include <asm/alternative.h>
 #include <asm/debug-monitors.h>
 #include <asm/insn.h>
-#include <asm/kvm_mmu.h>
 #include <asm/memory.h>
+
+#include "kvm_host.h"
+#include "kvm_mmu.h"
 
 /*
  * The LSB of the HYP VA tag

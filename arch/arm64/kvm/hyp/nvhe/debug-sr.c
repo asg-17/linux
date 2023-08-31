@@ -7,12 +7,13 @@
 #include <hyp/debug-sr.h>
 
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 
 #include <asm/debug-monitors.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 static void __debug_save_spe(u64 *pmscr_el1)
 {

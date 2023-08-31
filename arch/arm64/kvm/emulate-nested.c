@@ -5,12 +5,12 @@
  */
 
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_nested.h>
 
 #include "hyp/include/hyp/adjust_pc.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_nested.h"
 
 #include "trace.h"
 

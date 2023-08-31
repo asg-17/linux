@@ -7,10 +7,11 @@
 #include <linux/cpu.h>
 #include <linux/debugfs.h>
 #include <linux/interrupt.h>
-#include <linux/kvm_host.h>
 #include <linux/seq_file.h>
 #include <kvm/arm_vgic.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_host.h"
+#include "kvm_mmu.h"
 #include "vgic.h"
 
 /*

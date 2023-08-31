@@ -5,12 +5,12 @@
 
 #include <linux/irqchip/arm-gic.h>
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 #include <linux/nospec.h>
 
 #include <kvm/iodev.h>
 #include <kvm/arm_vgic.h>
 
+#include "kvm_host.h"
 #include "vgic.h"
 #include "vgic-mmio.h"
 

@@ -6,10 +6,11 @@
 #include <linux/uaccess.h>
 #include <linux/interrupt.h>
 #include <linux/cpu.h>
-#include <linux/kvm_host.h>
 #include <kvm/arm_vgic.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_mmu.h"
 #include "vgic.h"
 
 /*

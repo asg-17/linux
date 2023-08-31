@@ -11,7 +11,6 @@
  */
 #define pr_fmt(x) "hibernate: " x
 #include <linux/cpu.h>
-#include <linux/kvm_host.h>
 #include <linux/pm.h>
 #include <linux/sched.h>
 #include <linux/suspend.h>
@@ -33,6 +32,8 @@
 #include <asm/sysreg.h>
 #include <asm/trans_pgd.h>
 #include <asm/virt.h>
+
+#include "kvm_host.h"
 
 /*
  * Hibernate core relies on this value being 0 on resume, and marks it

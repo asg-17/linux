@@ -8,11 +8,11 @@
 
 #include <linux/compiler.h>
 #include <linux/irqchip/arm-gic-v3.h>
-#include <linux/kvm_host.h>
 
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 #define vtr_to_max_lr_idx(v)		((v) & 0xf)
 #define vtr_to_nr_pre_bits(v)		((((u32)(v) >> 26) & 7) + 1)

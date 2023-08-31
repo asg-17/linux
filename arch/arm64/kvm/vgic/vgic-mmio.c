@@ -8,11 +8,11 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 #include <kvm/iodev.h>
 #include <kvm/arm_arch_timer.h>
 #include <kvm/arm_vgic.h>
 
+#include "kvm_host.h"
 #include "vgic.h"
 #include "vgic-mmio.h"
 

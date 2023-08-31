@@ -12,10 +12,11 @@
 #include <asm/el2_setup.h>
 #include <asm/kvm_arm.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_mmu.h>
 #include <asm/pgtable-hwdef.h>
 #include <asm/sysreg.h>
 #include <asm/virt.h>
+
+#include "kvm_mmu.h"
 
 	.text
 	.pushsection	.idmap.text, "ax"

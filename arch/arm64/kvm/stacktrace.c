@@ -17,9 +17,10 @@
  */
 
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 
 #include <asm/stacktrace/nvhe.h>
+
+#include "kvm_host.h"
 
 static struct stack_info stackinfo_get_overflow(void)
 {

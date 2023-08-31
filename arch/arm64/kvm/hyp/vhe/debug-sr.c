@@ -6,9 +6,8 @@
 
 #include <hyp/debug-sr.h>
 
-#include <linux/kvm_host.h>
-
-#include <asm/kvm_hyp.h>
+#include "kvm_host.h"
+#include "kvm_hyp.h"
 
 void __debug_switch_to_guest(struct kvm_vcpu *vcpu)
 {

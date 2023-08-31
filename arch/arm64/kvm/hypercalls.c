@@ -2,12 +2,11 @@
 // Copyright (C) 2019 Arm Ltd.
 
 #include <linux/arm-smccc.h>
-#include <linux/kvm_host.h>
-
-#include <asm/kvm_emulate.h>
 
 #include "arm_hypercalls.h"
 #include "arm_psci.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
 
 #define KVM_ARM_SMCCC_STD_FEATURES				\
 	GENMASK(KVM_REG_ARM_STD_BMAP_BIT_COUNT - 1, 0)

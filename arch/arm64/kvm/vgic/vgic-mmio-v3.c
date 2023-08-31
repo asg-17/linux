@@ -6,15 +6,15 @@
 #include <linux/bitfield.h>
 #include <linux/irqchip/arm-gic-v3.h>
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 #include <linux/interrupt.h>
 #include <kvm/iodev.h>
 #include <kvm/arm_vgic.h>
 
-#include <asm/kvm_emulate.h>
 #include <asm/kvm_arm.h>
-#include <asm/kvm_mmu.h>
 
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_mmu.h"
 #include "vgic.h"
 #include "vgic-mmio.h"
 

@@ -5,12 +5,12 @@
 #include <linux/irqdomain.h>
 #include <linux/kstrtox.h>
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 #include <kvm/arm_vgic.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_asm.h>
 
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 #include "vgic.h"
 
 static bool group0_trap;

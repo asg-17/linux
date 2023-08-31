@@ -5,9 +5,10 @@
  * Copyright (C) 2022 Google LLC
  */
 #include <asm/kvm_asm.h>
-#include <asm/kvm_hyp.h>
 #include <asm/memory.h>
 #include <asm/percpu.h>
+
+#include "kvm_hyp.h"
 
 DEFINE_PER_CPU(unsigned long [OVERFLOW_STACK_SIZE/sizeof(long)], overflow_stack)
 	__aligned(16);

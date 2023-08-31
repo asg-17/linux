@@ -7,12 +7,13 @@
 #include <hyp/sysreg-sr.h>
 
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 
 #include <asm/kprobes.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
 
 /*
  * Non-VHE: Both host and guest must save everything.

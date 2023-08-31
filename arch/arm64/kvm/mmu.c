@@ -5,20 +5,20 @@
  */
 
 #include <linux/mman.h>
-#include <linux/kvm_host.h>
 #include <linux/io.h>
 #include <linux/hugetlb.h>
 #include <linux/sched/signal.h>
 #include <asm/pgalloc.h>
 #include <asm/cacheflush.h>
 #include <asm/kvm_arm.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_pgtable.h>
 #include <asm/kvm_ras.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
 #include <asm/virt.h>
 
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_mmu.h"
 #include "kvm_trace.h"
 #include "trace.h"
 

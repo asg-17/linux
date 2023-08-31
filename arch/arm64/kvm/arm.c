@@ -8,7 +8,6 @@
 #include <linux/cpu_pm.h>
 #include <linux/errno.h>
 #include <linux/err.h>
-#include <linux/kvm_host.h>
 #include <linux/list.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
@@ -33,16 +32,17 @@
 #include <asm/virt.h>
 #include <asm/kvm_arm.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_pkvm.h>
-#include <asm/kvm_emulate.h>
 #include <asm/sections.h>
 
 #include <kvm/arm_pmu.h>
 
 #include "arm_hypercalls.h"
 #include "arm_psci.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
 #include "kvm_irqfd.h"
+#include "kvm_mmu.h"
 
 static enum kvm_mode kvm_mode = KVM_MODE_DEFAULT;
 

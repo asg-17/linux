@@ -7,9 +7,9 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
-#include <linux/kvm_host.h>
 #include <linux/irqchip/arm-gic-v3.h>
 
+#include "kvm_host.h"
 #include "vgic.h"
 
 /*

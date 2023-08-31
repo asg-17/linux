@@ -7,13 +7,13 @@
 #include <linux/irqchip/arm-gic-v3.h>
 
 #include <asm/kvm_asm.h>
-#include <asm/kvm_mmu.h>
 
 #include <hyp/adjust_pc.h>
 
 #include <nvhe/fixed_config.h>
 
 #include "../../sys_regs.h"
+#include "kvm_mmu.h"
 
 /*
  * Copies of the host's CPU features registers holding sanitized values at hyp.

@@ -12,7 +12,6 @@
 #include <linux/bitfield.h>
 #include <linux/bsearch.h>
 #include <linux/cacheinfo.h>
-#include <linux/kvm_host.h>
 #include <linux/mm.h>
 #include <linux/printk.h>
 #include <linux/uaccess.h>
@@ -22,15 +21,15 @@
 #include <asm/debug-monitors.h>
 #include <asm/esr.h>
 #include <asm/kvm_arm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
-#include <asm/kvm_nested.h>
 #include <asm/perf_event.h>
 #include <asm/sysreg.h>
 
-
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 #include "kvm_trace.h"
+#include "kvm_nested.h"
 #include "sys_regs.h"
 
 #include "trace.h"

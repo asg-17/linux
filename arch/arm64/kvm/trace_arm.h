@@ -2,9 +2,10 @@
 #if !defined(_TRACE_ARM_ARM64_KVM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_ARM_ARM64_KVM_H
 
-#include <asm/kvm_emulate.h>
 #include <kvm/arm_arch_timer.h>
 #include <linux/tracepoint.h>
+
+#include "kvm_emulate.h"
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM kvm

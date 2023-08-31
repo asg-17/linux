@@ -4,8 +4,9 @@
  */
 
 #include <linux/kvm.h>
-#include <linux/kvm_host.h>
 #include <kvm/arm_vgic.h>
+
+#include "kvm_host.h"
 #include "kvm_trace.h"
 #include "vgic.h"
 

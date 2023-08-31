@@ -8,9 +8,10 @@
 #define __ARM64_KVM_HYP_FAULT_H__
 
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_emulate.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 static inline bool __translate_far_to_hpfar(u64 far, u64 *hpfar)
 {

@@ -10,7 +10,6 @@
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
-#include <linux/kvm_host.h>
 #include <linux/kvm.h>
 #include <linux/hw_breakpoint.h>
 #include <linux/slab.h>
@@ -25,10 +24,12 @@
 #include <asm/ptrace.h>
 #include <asm/kvm_arm.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_mmu.h>
-#include <asm/kvm_nested.h>
 #include <asm/virt.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_mmu.h"
+#include "kvm_nested.h"
 
 /* Maximum phys_shift supported for any VM on this host */
 static u32 __ro_after_init kvm_ipa_limit;

@@ -8,13 +8,14 @@
 #define __ARM64_KVM_HYP_SYSREG_SR_H__
 
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 
 #include <asm/kprobes.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 static inline void __sysreg_save_common_state(struct kvm_cpu_context *ctxt)
 {

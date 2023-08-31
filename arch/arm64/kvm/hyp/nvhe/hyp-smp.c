@@ -5,8 +5,9 @@
  */
 
 #include <asm/kvm_asm.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 /*
  * nVHE copy of data structures tracking available CPU cores.

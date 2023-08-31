@@ -6,10 +6,10 @@
 
 #include <clocksource/arm_arch_timer.h>
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 void __kvm_timer_set_cntvoff(u64 cntvoff)
 {

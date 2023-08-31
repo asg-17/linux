@@ -2,11 +2,10 @@
 // Copyright (C) 2020 Arm Ltd.
 
 #include <linux/arm-smccc.h>
-#include <linux/kvm_host.h>
-
-#include <asm/kvm_emulate.h>
 
 #include "arm_hypercalls.h"
+#include "kvm_emulate.h"
+#include "kvm_host.h"
 
 #define ARM_SMCCC_TRNG_VERSION_1_0	0x10000UL
 

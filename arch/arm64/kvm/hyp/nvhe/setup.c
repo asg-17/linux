@@ -4,9 +4,6 @@
  * Author: Quentin Perret <qperret@google.com>
  */
 
-#include <linux/kvm_host.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_pgtable.h>
 #include <asm/kvm_pkvm.h>
 
@@ -19,6 +16,10 @@
 #include <nvhe/mm.h>
 #include <nvhe/pkvm.h>
 #include <nvhe/trap_handler.h>
+
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 unsigned long hyp_nr_cpus;
 

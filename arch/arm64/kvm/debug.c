@@ -6,14 +6,14 @@
  * Author: Alex Bennée <alex.bennee@linaro.org>
  */
 
-#include <linux/kvm_host.h>
 #include <linux/hw_breakpoint.h>
 
 #include <asm/debug-monitors.h>
 #include <asm/kvm_asm.h>
 #include <asm/kvm_arm.h>
-#include <asm/kvm_emulate.h>
 
+#include "kvm_emulate.h"
+#include "kvm_host.h"
 #include "trace.h"
 
 /* These are the bits of MDSCR_EL1 we may manipulate */

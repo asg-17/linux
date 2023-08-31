@@ -8,9 +8,10 @@
 #define __ARM64_KVM_HYP_H__
 
 #include <linux/compiler.h>
-#include <linux/kvm_host.h>
 #include <asm/alternative.h>
 #include <asm/sysreg.h>
+
+#include "../../../virt/kvm/include/kvm_host.h"
 
 DECLARE_PER_CPU(struct kvm_cpu_context, kvm_hyp_ctxt);
 DECLARE_PER_CPU(unsigned long, kvm_hyp_vector);

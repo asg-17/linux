@@ -9,6 +9,8 @@
 
 #include <asm/sysreg.h>
 
+#include "kvm_host.h"
+
 /*
  * This file contains definitions for features to be allowed or restricted for
  * guest virtual machines, depending on the mode KVM is running in and on the

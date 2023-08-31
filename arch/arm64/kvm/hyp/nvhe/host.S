@@ -9,8 +9,9 @@
 #include <asm/assembler.h>
 #include <asm/kvm_arm.h>
 #include <asm/kvm_asm.h>
-#include <asm/kvm_mmu.h>
 #include <asm/kvm_ptrauth.h>
+
+#include "kvm_mmu.h"
 
 	.text
 

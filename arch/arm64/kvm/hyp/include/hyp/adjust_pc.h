@@ -10,8 +10,9 @@
 #ifndef __ARM64_KVM_HYP_ADJUST_PC_H__
 #define __ARM64_KVM_HYP_ADJUST_PC_H__
 
-#include <asm/kvm_emulate.h>
 #include <asm/kvm_host.h>
+
+#include "kvm_emulate.h"
 
 static inline void kvm_skip_instr(struct kvm_vcpu *vcpu)
 {

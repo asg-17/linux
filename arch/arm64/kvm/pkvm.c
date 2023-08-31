@@ -6,7 +6,6 @@
 
 #include <linux/init.h>
 #include <linux/kmemleak.h>
-#include <linux/kvm_host.h>
 #include <linux/memblock.h>
 #include <linux/mutex.h>
 #include <linux/sort.h>
@@ -14,6 +13,7 @@
 #include <asm/kvm_pkvm.h>
 
 #include "hyp_constants.h"
+#include "kvm_host.h"
 
 DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
 

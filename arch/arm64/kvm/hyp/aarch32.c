@@ -10,9 +10,9 @@
  * Author: Christoffer Dall <c.dall@virtualopensystems.com>
  */
 
-#include <linux/kvm_host.h>
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_emulate.h"
 
 /*
  * stolen from arch/arm/kernel/opcodes.c

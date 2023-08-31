@@ -8,12 +8,12 @@
 
 #include <linux/compiler.h>
 #include <linux/irqchip/arm-gic.h>
-#include <linux/kvm_host.h>
 #include <linux/swab.h>
 
-#include <asm/kvm_emulate.h>
-#include <asm/kvm_hyp.h>
-#include <asm/kvm_mmu.h>
+#include "kvm_emulate.h"
+#include "kvm_host.h"
+#include "kvm_hyp.h"
+#include "kvm_mmu.h"
 
 static bool __is_be(struct kvm_vcpu *vcpu)
 {
