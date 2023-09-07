@@ -2,6 +2,8 @@
 #ifndef _ASM_X86_KVM_VCPU_REGS_H
 #define _ASM_X86_KVM_VCPU_REGS_H
 
+#ifdef __KVM__
+
 #define __VCPU_REGS_RAX  0
 #define __VCPU_REGS_RCX  1
 #define __VCPU_REGS_RDX  2
@@ -21,5 +23,7 @@
 #define __VCPU_REGS_R14 14
 #define __VCPU_REGS_R15 15
 #endif
+
+#endif /* __KVM__ */
 
 #endif /* _ASM_X86_KVM_VCPU_REGS_H */

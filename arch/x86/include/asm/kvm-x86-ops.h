@@ -3,6 +3,8 @@
 BUILD_BUG_ON(1)
 #endif
 
+#ifdef __KVM__
+
 /*
  * KVM_X86_OP() and KVM_X86_OP_OPTIONAL() are used to help generate
  * both DECLARE/DEFINE_STATIC_CALL() invocations and
@@ -137,3 +139,5 @@ KVM_X86_OP_OPTIONAL_RET0(vcpu_get_apicv_inhibit_reasons);
 #undef KVM_X86_OP
 #undef KVM_X86_OP_OPTIONAL
 #undef KVM_X86_OP_OPTIONAL_RET0
+
+#endif /* __KVM__ */

@@ -2,6 +2,8 @@
 #ifndef __KVM_HOST_H
 #define __KVM_HOST_H
 
+#ifdef __KVM__
+
 #include <linux/entry-kvm.h>
 #include <linux/types.h>
 #include <linux/hardirq.h>
@@ -2316,5 +2318,7 @@ static inline void kvm_account_pgtable_pages(void *virt, int nr)
 
 /* Max number of entries allowed for each kvm dirty ring */
 #define  KVM_DIRTY_RING_MAX_ENTRIES  65536
+
+#endif /* __KVM__ */
 
 #endif

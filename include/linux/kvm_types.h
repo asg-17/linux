@@ -3,6 +3,8 @@
 #ifndef __KVM_TYPES_H__
 #define __KVM_TYPES_H__
 
+#ifdef __KVM__
+
 struct kvm;
 struct kvm_async_pf;
 struct kvm_device_ops;
@@ -24,6 +26,8 @@ enum kvm_mr_change;
 #include <linux/spinlock_types.h>
 
 #include <asm/kvm_types.h>
+
+#endif /* __KVM__ */
 
 /*
  * Address types:
@@ -47,6 +51,8 @@ typedef u64            hpa_t;
 typedef u64            hfn_t;
 
 typedef hfn_t kvm_pfn_t;
+
+#ifdef __KVM__
 
 enum pfn_cache_usage {
 	KVM_GUEST_USES_PFN = BIT(0),
@@ -122,5 +128,7 @@ struct kvm_vcpu_stat_generic {
 };
 
 #define KVM_STATS_NAME_SIZE	48
+
+#endif /* __KVM__ */
 
 #endif /* __KVM_TYPES_H__ */

@@ -1,6 +1,8 @@
 #ifndef KVM_DIRTY_RING_H
 #define KVM_DIRTY_RING_H
 
+#ifdef __KVM__
+
 #include <linux/kvm.h>
 
 /**
@@ -97,5 +99,7 @@ struct page *kvm_dirty_ring_get_page(struct kvm_dirty_ring *ring, u32 offset);
 void kvm_dirty_ring_free(struct kvm_dirty_ring *ring);
 
 #endif /* CONFIG_HAVE_KVM_DIRTY_RING */
+
+#endif /* __KVM__ */
 
 #endif	/* KVM_DIRTY_RING_H */

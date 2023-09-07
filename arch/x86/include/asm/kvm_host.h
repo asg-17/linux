@@ -8,6 +8,8 @@
 #ifndef _ASM_X86_KVM_HOST_H
 #define _ASM_X86_KVM_HOST_H
 
+#ifdef __KVM__
+
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/mmu_notifier.h>
@@ -2234,5 +2236,7 @@ int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages);
  * remaining 31 lower bits must be 0 to preserve ABI.
  */
 #define KVM_EXIT_HYPERCALL_MBZ		GENMASK_ULL(31, 1)
+
+#endif /* __KVM__ */
 
 #endif /* _ASM_X86_KVM_HOST_H */

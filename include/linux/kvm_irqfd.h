@@ -8,6 +8,8 @@
 #ifndef __LINUX_KVM_IRQFD_H
 #define __LINUX_KVM_IRQFD_H
 
+#ifdef __KVM__
+
 #include <linux/kvm_host.h>
 #include <linux/poll.h>
 
@@ -60,5 +62,7 @@ struct kvm_kernel_irqfd {
 	struct irq_bypass_consumer consumer;
 	struct irq_bypass_producer *producer;
 };
+
+#endif /* __KVM__ */
 
 #endif /* __LINUX_KVM_IRQFD_H */

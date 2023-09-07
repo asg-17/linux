@@ -3,6 +3,8 @@
 BUILD_BUG_ON(1)
 #endif
 
+#ifdef __KVM__
+
 /*
  * KVM_X86_PMU_OP() and KVM_X86_PMU_OP_OPTIONAL() are used to help generate
  * both DECLARE/DEFINE_STATIC_CALL() invocations and
@@ -28,3 +30,5 @@ KVM_X86_PMU_OP_OPTIONAL(cleanup)
 
 #undef KVM_X86_PMU_OP
 #undef KVM_X86_PMU_OP_OPTIONAL
+
+#endif /* __KVM__ */
