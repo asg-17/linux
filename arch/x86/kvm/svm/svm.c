@@ -52,9 +52,6 @@
 #include "kvm_onhyperv.h"
 #include "svm_onhyperv.h"
 
-MODULE_AUTHOR("Qumranet");
-MODULE_LICENSE("GPL");
-
 #ifdef MODULE
 static const struct x86_cpu_id svm_cpu_id[] = {
 	X86_MATCH_FEATURE(X86_FEATURE_SVM, NULL),
@@ -69,6 +66,9 @@ MODULE_DEVICE_TABLE(x86cpu, svm_cpu_id);
 static bool erratum_383_found __read_mostly;
 
 u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
+
+extern bool nested;
+extern bool vnmi;
 
 /*
  * Set osvw_len to higher value when updated Revision Guides
@@ -197,10 +197,6 @@ module_param(pause_filter_count_max, ushort, 0444);
 bool npt_enabled = true;
 module_param_named(npt, npt_enabled, bool, 0444);
 
-/* allow nested virtualization in KVM/SVM */
-static int nested = true;
-module_param(nested, int, S_IRUGO);
-
 /* enable/disable Next RIP Save */
 int nrips = true;
 module_param(nrips, int, 0444);
@@ -233,9 +229,6 @@ module_param(dump_invalid_vmcb, bool, 0644);
 
 bool intercept_smi = true;
 module_param(intercept_smi, bool, 0444);
-
-bool vnmi = true;
-module_param(vnmi, bool, 0444);
 
 static bool svm_gp_erratum_intercept = true;
 
@@ -558,7 +551,7 @@ static bool __kvm_is_svm_supported(void)
 	return true;
 }
 
-static bool kvm_is_svm_supported(void)
+bool kvm_is_svm_supported(void)
 {
 	bool supported;
 
@@ -5312,14 +5305,11 @@ static void __svm_exit(void)
 	cpu_emergency_unregister_virt_callback(svm_emergency_disable);
 }
 
-static int __init svm_init(void)
+int __init svm_init(void)
 {
 	int r;
 
 	__unused_size_checks();
-
-	if (!kvm_is_svm_supported())
-		return -EOPNOTSUPP;
 
 	r = kvm_x86_vendor_init(&svm_init_ops);
 	if (r)
@@ -5343,11 +5333,8 @@ err_kvm_init:
 	return r;
 }
 
-static void __exit svm_exit(void)
+void __exit svm_module_exit(void)
 {
 	kvm_exit();
 	__svm_exit();
 }
-
-module_init(svm_init)
-module_exit(svm_exit)

@@ -66,9 +66,6 @@
 #include "x86.h"
 #include "smm.h"
 
-MODULE_AUTHOR("Qumranet");
-MODULE_LICENSE("GPL");
-
 #ifdef MODULE
 static const struct x86_cpu_id vmx_cpu_id[] = {
 	X86_MATCH_FEATURE(X86_FEATURE_VMX, NULL),
@@ -77,11 +74,11 @@ static const struct x86_cpu_id vmx_cpu_id[] = {
 MODULE_DEVICE_TABLE(x86cpu, vmx_cpu_id);
 #endif
 
+extern bool nested;
+extern bool vnmi;
+
 bool __read_mostly enable_vpid = 1;
 module_param_named(vpid, enable_vpid, bool, 0444);
-
-static bool __read_mostly enable_vnmi = 1;
-module_param_named(vnmi, enable_vnmi, bool, S_IRUGO);
 
 bool __read_mostly flexpriority_enabled = 1;
 module_param_named(flexpriority, flexpriority_enabled, bool, S_IRUGO);
@@ -106,14 +103,6 @@ module_param(enable_apicv, bool, S_IRUGO);
 
 bool __read_mostly enable_ipiv = true;
 module_param(enable_ipiv, bool, 0444);
-
-/*
- * If nested=1, nested virtualization is supported, i.e., guests may use
- * VMX and be a hypervisor for its own guests. If nested=0, guests may not
- * use VMX instructions.
- */
-static bool __read_mostly nested = 1;
-module_param(nested, bool, S_IRUGO);
 
 bool __read_mostly enable_pml = 1;
 module_param_named(pml, enable_pml, bool, S_IRUGO);
@@ -2749,7 +2738,7 @@ static bool __kvm_is_vmx_supported(void)
 	return true;
 }
 
-static bool kvm_is_vmx_supported(void)
+bool kvm_is_vmx_supported(void)
 {
 	bool supported;
 
@@ -4377,7 +4366,7 @@ static u32 vmx_pin_based_exec_ctrl(struct vcpu_vmx *vmx)
 	if (!kvm_vcpu_apicv_active(&vmx->vcpu))
 		pin_based_exec_ctrl &= ~PIN_BASED_POSTED_INTR;
 
-	if (!enable_vnmi)
+	if (!vnmi)
 		pin_based_exec_ctrl &= ~PIN_BASED_VIRTUAL_NMIS;
 
 	if (!enable_preemption_timer)
@@ -4911,7 +4900,7 @@ static void vmx_enable_irq_window(struct kvm_vcpu *vcpu)
 
 static void vmx_enable_nmi_window(struct kvm_vcpu *vcpu)
 {
-	if (!enable_vnmi ||
+	if (!vnmi ||
 	    vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) & GUEST_INTR_STATE_STI) {
 		vmx_enable_irq_window(vcpu);
 		return;
@@ -4952,7 +4941,7 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
 {
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 
-	if (!enable_vnmi) {
+	if (!vnmi) {
 		/*
 		 * Tracking the NMI-blocked state in software is built upon
 		 * finding the next open IRQ window. This, in turn, depends on
@@ -4984,7 +4973,7 @@ bool vmx_get_nmi_mask(struct kvm_vcpu *vcpu)
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	bool masked;
 
-	if (!enable_vnmi)
+	if (!vnmi)
 		return vmx->loaded_vmcs->soft_vnmi_blocked;
 	if (vmx->loaded_vmcs->nmi_known_unmasked)
 		return false;
@@ -4997,7 +4986,7 @@ void vmx_set_nmi_mask(struct kvm_vcpu *vcpu, bool masked)
 {
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 
-	if (!enable_vnmi) {
+	if (!vnmi) {
 		if (vmx->loaded_vmcs->soft_vnmi_blocked != masked) {
 			vmx->loaded_vmcs->soft_vnmi_blocked = masked;
 			vmx->loaded_vmcs->vnmi_blocked_time = 0;
@@ -5018,7 +5007,7 @@ bool vmx_nmi_blocked(struct kvm_vcpu *vcpu)
 	if (is_guest_mode(vcpu) && nested_exit_on_nmi(vcpu))
 		return false;
 
-	if (!enable_vnmi && to_vmx(vcpu)->loaded_vmcs->soft_vnmi_blocked)
+	if (!vnmi && to_vmx(vcpu)->loaded_vmcs->soft_vnmi_blocked)
 		return true;
 
 	return (vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) &
@@ -5748,7 +5737,7 @@ static int handle_ept_violation(struct kvm_vcpu *vcpu)
 	 * AAK134, BY25.
 	 */
 	if (!(to_vmx(vcpu)->idt_vectoring_info & VECTORING_INFO_VALID_MASK) &&
-			enable_vnmi &&
+			vnmi &&
 			(exit_qualification & INTR_INFO_UNBLOCK_NMI))
 		vmcs_set_bits(GUEST_INTERRUPTIBILITY_INFO, GUEST_INTR_STATE_NMI);
 
@@ -5810,7 +5799,7 @@ static int handle_ept_misconfig(struct kvm_vcpu *vcpu)
 
 static int handle_nmi_window(struct kvm_vcpu *vcpu)
 {
-	if (KVM_BUG_ON(!enable_vnmi, vcpu->kvm))
+	if (KVM_BUG_ON(!vnmi, vcpu->kvm))
 		return -EIO;
 
 	exec_controls_clearbit(to_vmx(vcpu), CPU_BASED_NMI_WINDOW_EXITING);
@@ -5979,7 +5968,7 @@ static int handle_pml_full(struct kvm_vcpu *vcpu)
 	 * "blocked by NMI" bit has to be set before next VM entry.
 	 */
 	if (!(to_vmx(vcpu)->idt_vectoring_info & VECTORING_INFO_VALID_MASK) &&
-			enable_vnmi &&
+			vnmi &&
 			(exit_qualification & INTR_INFO_UNBLOCK_NMI))
 		vmcs_set_bits(GUEST_INTERRUPTIBILITY_INFO,
 				GUEST_INTR_STATE_NMI);
@@ -6055,7 +6044,7 @@ static int handle_notify(struct kvm_vcpu *vcpu)
 	 * Notify VM exit happened while executing iret from NMI,
 	 * "blocked by NMI" bit has to be set before next VM entry.
 	 */
-	if (enable_vnmi && (exit_qual & INTR_INFO_UNBLOCK_NMI))
+	if (vnmi && (exit_qual & INTR_INFO_UNBLOCK_NMI))
 		vmcs_set_bits(GUEST_INTERRUPTIBILITY_INFO,
 			      GUEST_INTR_STATE_NMI);
 
@@ -6519,7 +6508,7 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 		return 0;
 	}
 
-	if (unlikely(!enable_vnmi &&
+	if (unlikely(!vnmi &&
 		     vmx->loaded_vmcs->soft_vnmi_blocked)) {
 		if (!vmx_interrupt_blocked(vcpu)) {
 			vmx->loaded_vmcs->soft_vnmi_blocked = 0;
@@ -7022,7 +7011,7 @@ static void vmx_recover_nmi_blocking(struct vcpu_vmx *vmx)
 
 	idtv_info_valid = vmx->idt_vectoring_info & VECTORING_INFO_VALID_MASK;
 
-	if (enable_vnmi) {
+	if (vnmi) {
 		if (vmx->loaded_vmcs->nmi_known_unmasked)
 			return;
 
@@ -7277,7 +7266,7 @@ static fastpath_t vmx_vcpu_run(struct kvm_vcpu *vcpu)
 	unsigned long cr3, cr4;
 
 	/* Record the guest's net vcpu time for enforced NMI injections. */
-	if (unlikely(!enable_vnmi &&
+	if (unlikely(!vnmi &&
 		     vmx->loaded_vmcs->soft_vnmi_blocked))
 		vmx->loaded_vmcs->entry_time = ktime_get();
 
@@ -8210,6 +8199,33 @@ static void vmx_vm_destroy(struct kvm *kvm)
 	free_pages((unsigned long)kvm_vmx->pid_table, vmx_get_pid_table_order(kvm));
 }
 
+static void vmx_cleanup_l1d_flush(void)
+{
+	if (vmx_l1d_flush_pages) {
+		free_pages((unsigned long)vmx_l1d_flush_pages, L1D_CACHE_ORDER);
+		vmx_l1d_flush_pages = NULL;
+	}
+	/* Restore state so sysfs ignores VMX */
+	l1tf_vmx_mitigation = VMENTER_L1D_FLUSH_AUTO;
+}
+
+static void __vmx_exit(void)
+{
+	allow_smaller_maxphyaddr = false;
+
+	cpu_emergency_unregister_virt_callback(vmx_emergency_disable);
+
+	vmx_cleanup_l1d_flush();
+}
+
+void vmx_module_exit(void)
+{
+	kvm_exit();
+	kvm_x86_vendor_exit();
+
+	__vmx_exit();
+}
+
 static struct kvm_x86_ops vmx_x86_ops __initdata = {
 	.name = KBUILD_MODNAME,
 
@@ -8475,7 +8491,7 @@ static __init int hardware_setup(void)
 		flexpriority_enabled = 0;
 
 	if (!cpu_has_virtual_nmis())
-		enable_vnmi = 0;
+		vnmi = 0;
 
 #ifdef CONFIG_X86_SGX_KVM
 	if (!cpu_has_vmx_encls_vmexit())
@@ -8619,40 +8635,9 @@ static struct kvm_x86_init_ops vmx_init_ops __initdata = {
 	.pmu_ops = &intel_pmu_ops,
 };
 
-static void vmx_cleanup_l1d_flush(void)
-{
-	if (vmx_l1d_flush_pages) {
-		free_pages((unsigned long)vmx_l1d_flush_pages, L1D_CACHE_ORDER);
-		vmx_l1d_flush_pages = NULL;
-	}
-	/* Restore state so sysfs ignores VMX */
-	l1tf_vmx_mitigation = VMENTER_L1D_FLUSH_AUTO;
-}
-
-static void __vmx_exit(void)
-{
-	allow_smaller_maxphyaddr = false;
-
-	cpu_emergency_unregister_virt_callback(vmx_emergency_disable);
-
-	vmx_cleanup_l1d_flush();
-}
-
-static void vmx_exit(void)
-{
-	kvm_exit();
-	kvm_x86_vendor_exit();
-
-	__vmx_exit();
-}
-module_exit(vmx_exit);
-
-static int __init vmx_init(void)
+int __init vmx_init(void)
 {
 	int r, cpu;
-
-	if (!kvm_is_vmx_supported())
-		return -EOPNOTSUPP;
 
 	/*
 	 * Note, hv_init_evmcs() touches only VMX knobs, i.e. there's nothing
@@ -8702,6 +8687,7 @@ static int __init vmx_init(void)
 	if (r)
 		goto err_kvm_init;
 
+
 	return 0;
 
 err_kvm_init:
@@ -8710,4 +8696,3 @@ err_l1d_flush:
 	kvm_x86_vendor_exit();
 	return r;
 }
-module_init(vmx_init);
