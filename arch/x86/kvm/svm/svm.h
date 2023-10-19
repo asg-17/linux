@@ -24,6 +24,7 @@
 
 #include "cpuid.h"
 #include "kvm_cache_regs.h"
+#include "vac.h"
 
 #define __sme_page_pa(x) __sme_set(page_to_pfn(x) << PAGE_SHIFT)
 
@@ -289,21 +290,6 @@ struct vcpu_svm {
 
 	/* Guest GIF value, used when vGIF is not enabled */
 	bool guest_gif;
-};
-
-struct svm_cpu_data {
-	u64 asid_generation;
-	u32 max_asid;
-	u32 next_asid;
-	u32 min_asid;
-
-	struct page *save_area;
-	unsigned long save_area_pa;
-
-	struct vmcb *current_vmcb;
-
-	/* index = sev_asid, value = vmcb pointer */
-	struct vmcb **sev_vmcbs;
 };
 
 DECLARE_PER_CPU(struct svm_cpu_data, svm_data);
