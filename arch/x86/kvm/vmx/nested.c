@@ -14,6 +14,7 @@
 #include "pmu.h"
 #include "sgx.h"
 #include "trace.h"
+#include "vac.h"
 #include "vmx.h"
 #include "x86.h"
 #include "smm.h"
