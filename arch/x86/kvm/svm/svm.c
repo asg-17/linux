@@ -234,7 +234,14 @@ static u8 rsm_ins_bytes[] = "\x0f\xaa";
 
 static unsigned long iopm_base;
 
-DEFINE_PER_CPU(struct svm_cpu_data, svm_data);
+struct kvm_ldttss_desc {
+	u16 limit0;
+	u16 base0;
+	unsigned base1:8, type:5, dpl:2, p:1;
+	unsigned limit1:4, zero0:3, g:1, base2:8;
+	u32 base3;
+	u32 zero1;
+} __attribute__((packed));
 
 /*
  * Only MSR_TSC_AUX is switched via the user return hook.  EFER is switched via
