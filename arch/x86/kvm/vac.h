@@ -5,6 +5,20 @@
 
 #include <linux/user-return-notifier.h>
 
+int __init vac_init(void);
+void vac_exit(void);
+
+#ifdef CONFIG_KVM_INTEL
+int __init vac_vmx_init(void);
+void vac_vmx_exit(void);
+#else
+int __init vac_vmx_init(void)
+{
+	return 0;
+}
+void vac_vmx_exit(void) {}
+#endif
+
 /*
  * Restoring the host value for MSRs that are only consumed when running in
  * usermode, e.g. SYSCALL MSRs and TSC_AUX, can be deferred until the CPU
