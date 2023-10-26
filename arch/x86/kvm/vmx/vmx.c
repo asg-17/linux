@@ -459,12 +459,6 @@ noinline void invept_error(unsigned long ext, u64 eptp, gpa_t gpa)
 			ext, eptp, gpa);
 }
 
-/*
- * We maintain a per-CPU linked-list of VMCS loaded on that CPU. This is needed
- * when a CPU is brought down, and we need to VMCLEAR all VMCSs loaded on it.
- */
-static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
-
 struct vmcs_config vmcs_config __ro_after_init;
 struct vmx_capability vmx_capability __ro_after_init;
 
@@ -717,90 +711,6 @@ static int vmx_set_guest_uret_msr(struct vcpu_vmx *vmx,
 	if (!ret)
 		msr->data = data;
 	return ret;
-}
-
-/*
- * Disable VMX and clear CR4.VMXE (even if VMXOFF faults)
- *
- * Note, VMXOFF causes a #UD if the CPU is !post-VMXON, but it's impossible to
- * atomically track post-VMXON state, e.g. this may be called in NMI context.
- * Eat all faults as all other faults on VMXOFF faults are mode related, i.e.
- * faults are guaranteed to be due to the !post-VMXON check unless the CPU is
- * magically in RM, VM86, compat mode, or at CPL>0.
- */
-static int kvm_cpu_vmxoff(void)
-{
-	asm_volatile_goto("1: vmxoff\n\t"
-			  _ASM_EXTABLE(1b, %l[fault])
-			  ::: "cc", "memory" : fault);
-
-	cr4_clear_bits(X86_CR4_VMXE);
-	return 0;
-
-fault:
-	cr4_clear_bits(X86_CR4_VMXE);
-	return -EIO;
-}
-
-static void vmx_emergency_disable(void)
-{
-	int cpu = raw_smp_processor_id();
-	struct loaded_vmcs *v;
-
-	kvm_rebooting = true;
-
-	/*
-	 * Note, CR4.VMXE can be _cleared_ in NMI context, but it can only be
-	 * set in task context.  If this races with VMX is disabled by an NMI,
-	 * VMCLEAR and VMXOFF may #UD, but KVM will eat those faults due to
-	 * kvm_rebooting set.
-	 */
-	if (!(__read_cr4() & X86_CR4_VMXE))
-		return;
-
-	list_for_each_entry(v, &per_cpu(loaded_vmcss_on_cpu, cpu),
-			    loaded_vmcss_on_cpu_link)
-		vmcs_clear(v->vmcs);
-
-	kvm_cpu_vmxoff();
-}
-
-static void __loaded_vmcs_clear(void *arg)
-{
-	struct loaded_vmcs *loaded_vmcs = arg;
-	int cpu = raw_smp_processor_id();
-
-	if (loaded_vmcs->cpu != cpu)
-		return; /* vcpu migration can race with cpu offline */
-	if (per_cpu(current_vmcs, cpu) == loaded_vmcs->vmcs)
-		per_cpu(current_vmcs, cpu) = NULL;
-
-	vmcs_clear(loaded_vmcs->vmcs);
-	if (loaded_vmcs->shadow_vmcs && loaded_vmcs->launched)
-		vmcs_clear(loaded_vmcs->shadow_vmcs);
-
-	list_del(&loaded_vmcs->loaded_vmcss_on_cpu_link);
-
-	/*
-	 * Ensure all writes to loaded_vmcs, including deleting it from its
-	 * current percpu list, complete before setting loaded_vmcs->cpu to
-	 * -1, otherwise a different cpu can see loaded_vmcs->cpu == -1 first
-	 * and add loaded_vmcs to its percpu list before it's deleted from this
-	 * cpu's list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
-	 */
-	smp_wmb();
-
-	loaded_vmcs->cpu = -1;
-	loaded_vmcs->launched = 0;
-}
-
-void loaded_vmcs_clear(struct loaded_vmcs *loaded_vmcs)
-{
-	int cpu = loaded_vmcs->cpu;
-
-	if (cpu != -1)
-		smp_call_function_single(cpu,
-			 __loaded_vmcs_clear, loaded_vmcs, 1);
 }
 
 static bool vmx_segment_cache_test_set(struct vcpu_vmx *vmx, unsigned seg,
@@ -1414,8 +1324,9 @@ void vmx_vcpu_load_vmcs(struct kvm_vcpu *vcpu, int cpu,
 		 */
 		smp_rmb();
 
-		list_add(&vmx->loaded_vmcs->loaded_vmcss_on_cpu_link,
-			 &per_cpu(loaded_vmcss_on_cpu, cpu));
+		add_vmcs_to_loaded_vmcss_on_cpu(
+				&vmx->loaded_vmcs->loaded_vmcss_on_cpu_link,
+				cpu);
 		local_irq_enable();
 	}
 
@@ -2766,78 +2677,6 @@ static int vmx_check_processor_compat(void)
 		return -EIO;
 	}
 	return 0;
-}
-
-static int kvm_cpu_vmxon(u64 vmxon_pointer)
-{
-	u64 msr;
-
-	cr4_set_bits(X86_CR4_VMXE);
-
-	asm_volatile_goto("1: vmxon %[vmxon_pointer]\n\t"
-			  _ASM_EXTABLE(1b, %l[fault])
-			  : : [vmxon_pointer] "m"(vmxon_pointer)
-			  : : fault);
-	return 0;
-
-fault:
-	WARN_ONCE(1, "VMXON faulted, MSR_IA32_FEAT_CTL (0x3a) = 0x%llx\n",
-		  rdmsrl_safe(MSR_IA32_FEAT_CTL, &msr) ? 0xdeadbeef : msr);
-	cr4_clear_bits(X86_CR4_VMXE);
-
-	return -EFAULT;
-}
-
-static int vmx_hardware_enable(void)
-{
-	int cpu = raw_smp_processor_id();
-	u64 phys_addr = __pa(vac_get_vmxarea(cpu));
-	int r;
-
-	if (cr4_read_shadow() & X86_CR4_VMXE)
-		return -EBUSY;
-
-	/*
-	 * This can happen if we hot-added a CPU but failed to allocate
-	 * VP assist page for it.
-	 */
-	if (kvm_is_using_evmcs() && !hv_get_vp_assist_page(cpu))
-		return -EFAULT;
-
-	intel_pt_handle_vmx(1);
-
-	r = kvm_cpu_vmxon(phys_addr);
-	if (r) {
-		intel_pt_handle_vmx(0);
-		return r;
-	}
-
-	if (enable_ept)
-		ept_sync_global();
-
-	return 0;
-}
-
-static void vmclear_local_loaded_vmcss(void)
-{
-	int cpu = raw_smp_processor_id();
-	struct loaded_vmcs *v, *n;
-
-	list_for_each_entry_safe(v, n, &per_cpu(loaded_vmcss_on_cpu, cpu),
-				 loaded_vmcss_on_cpu_link)
-		__loaded_vmcs_clear(v);
-}
-
-static void vmx_hardware_disable(void)
-{
-	vmclear_local_loaded_vmcss();
-
-	if (kvm_cpu_vmxoff())
-		kvm_spurious_fault();
-
-	hv_reset_evmcs();
-
-	intel_pt_handle_vmx(0);
 }
 
 struct vmcs *alloc_vmcs_cpu(bool shadow, int cpu, gfp_t flags)
@@ -8185,13 +8024,15 @@ static void __vmx_exit(void)
 {
 	allow_smaller_maxphyaddr = false;
 
-	cpu_emergency_unregister_virt_callback(vmx_emergency_disable);
+	//TODO: Remove this exit call once VAC is a module
+	vac_vmx_exit();
 
 	vmx_cleanup_l1d_flush();
 }
 
 void vmx_module_exit(void)
 {
+	hv_reset_evmcs();
 	kvm_exit();
 	kvm_x86_vendor_exit();
 
@@ -8607,7 +8448,7 @@ static struct kvm_x86_init_ops vmx_init_ops __initdata = {
 
 int __init vmx_init(void)
 {
-	int r, cpu;
+	int r;
 
 	/*
 	 * Note, hv_init_evmcs() touches only VMX knobs, i.e. there's nothing
@@ -8630,13 +8471,8 @@ int __init vmx_init(void)
 	if (r)
 		goto err_l1d_flush;
 
-	for_each_possible_cpu(cpu) {
-		INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
-
-		pi_init_cpu(cpu);
-	}
-
-	cpu_emergency_register_virt_callback(vmx_emergency_disable);
+	//TODO: Remove this init call once VAC is a module
+	vac_vmx_init();
 
 	vmx_check_vmcs12_offsets();
 

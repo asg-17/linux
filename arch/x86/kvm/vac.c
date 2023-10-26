@@ -93,3 +93,15 @@ int kvm_set_user_return_msr(unsigned int slot, u64 value, u64 mask)
 	}
 	return 0;
 }
+
+int __init vac_init(void)
+{
+	int r;
+	r = vac_vmx_init();
+	return r;
+}
+
+void vac_exit(void)
+{
+	vac_vmx_exit();
+}
