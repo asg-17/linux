@@ -19,6 +19,18 @@ int __init vac_vmx_init(void)
 void vac_vmx_exit(void) {}
 #endif
 
+#ifdef CONFIG_KVM_AMD
+int __init vac_svm_init(void);
+void vac_svm_exit(void);
+#else
+int __init vac_svm_init(void)
+{
+	return 0;
+}
+void vac_svm_exit(void) {}
+#endif
+
+
 /*
  * Restoring the host value for MSRs that are only consumed when running in
  * usermode, e.g. SYSCALL MSRs and TSC_AUX, can be deferred until the CPU
