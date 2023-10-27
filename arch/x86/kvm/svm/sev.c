@@ -28,6 +28,7 @@
 #include "mmu.h"
 #include "x86.h"
 #include "svm.h"
+#include "svm_data.h"
 #include "svm_ops.h"
 #include "cpuid.h"
 #include "trace.h"
@@ -68,7 +69,6 @@ module_param_named(debug_swap, sev_es_debug_swap_enabled, bool, 0444);
 static u8 sev_enc_bit;
 static DECLARE_RWSEM(sev_deactivate_lock);
 static DEFINE_MUTEX(sev_bitmap_lock);
-unsigned int max_sev_asid;
 static unsigned int min_sev_asid;
 static unsigned long sev_me_mask;
 static unsigned int nr_asids;

@@ -24,7 +24,7 @@
 
 #include "cpuid.h"
 #include "kvm_cache_regs.h"
-#include "vac.h"
+#include "svm_data.h"
 
 #define __sme_page_pa(x) __sme_set(page_to_pfn(x) << PAGE_SHIFT)
 
@@ -651,8 +651,6 @@ void avic_refresh_virtual_apic_mode(struct kvm_vcpu *vcpu);
 #define GHCB_VERSION_MAX	1ULL
 #define GHCB_VERSION_MIN	1ULL
 
-
-extern unsigned int max_sev_asid;
 
 void sev_vm_destroy(struct kvm *kvm);
 int sev_mem_enc_ioctl(struct kvm *kvm, void __user *argp);
