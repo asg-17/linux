@@ -5,11 +5,11 @@
 #include "irq.h"
 #include "mmu.h"
 #include "kvm_cache_regs.h"
-#include "vac.h"
 #include "x86.h"
 #include "smm.h"
 #include "cpuid.h"
 #include "pmu.h"
+#include "vac.h"
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -67,12 +67,6 @@ MODULE_DEVICE_TABLE(x86cpu, svm_cpu_id);
 static bool erratum_383_found __read_mostly;
 
 u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
-
-/*
- * Set osvw_len to higher value when updated Revision Guides
- * are published and we know what the new status bits are
- */
-static uint64_t osvw_len = 4, osvw_status;
 
 static DEFINE_PER_CPU(u64, current_tsc_ratio);
 
@@ -210,9 +204,6 @@ module_param(vgif, int, 0444);
 /* enable/disable LBR virtualization */
 static int lbrv = true;
 module_param(lbrv, int, 0444);
-
-static int tsc_scaling = true;
-module_param(tsc_scaling, int, 0444);
 
 /*
  * enable / disable AVIC.  Because the defaults differ for APICv
@@ -582,106 +573,6 @@ static void __svm_write_tsc_multiplier(u64 multiplier)
 
 	wrmsrl(MSR_AMD64_TSC_RATIO, multiplier);
 	__this_cpu_write(current_tsc_ratio, multiplier);
-}
-
-static inline void kvm_cpu_svm_disable(void)
-{
-	uint64_t efer;
-
-	wrmsrl(MSR_VM_HSAVE_PA, 0);
-	rdmsrl(MSR_EFER, efer);
-	if (efer & EFER_SVME) {
-		/*
-		 * Force GIF=1 prior to disabling SVM, e.g. to ensure INIT and
-		 * NMI aren't blocked.
-		 */
-		stgi();
-		wrmsrl(MSR_EFER, efer & ~EFER_SVME);
-	}
-}
-
-static void svm_emergency_disable(void)
-{
-	kvm_rebooting = true;
-
-	kvm_cpu_svm_disable();
-}
-
-static void svm_hardware_disable(void)
-{
-	/* Make sure we clean up behind us */
-	if (tsc_scaling)
-		__svm_write_tsc_multiplier(SVM_TSC_RATIO_DEFAULT);
-
-	kvm_cpu_svm_disable();
-
-	amd_pmu_disable_virt();
-}
-
-static int svm_hardware_enable(void)
-{
-
-	struct svm_cpu_data *sd;
-	uint64_t efer;
-	int me = raw_smp_processor_id();
-
-	rdmsrl(MSR_EFER, efer);
-	if (efer & EFER_SVME)
-		return -EBUSY;
-
-	sd = per_cpu_ptr(&svm_data, me);
-	sd->asid_generation = 1;
-	sd->max_asid = cpuid_ebx(SVM_CPUID_FUNC) - 1;
-	sd->next_asid = sd->max_asid + 1;
-	sd->min_asid = max_sev_asid + 1;
-
-	wrmsrl(MSR_EFER, efer | EFER_SVME);
-
-	wrmsrl(MSR_VM_HSAVE_PA, sd->save_area_pa);
-
-	if (static_cpu_has(X86_FEATURE_TSCRATEMSR)) {
-		/*
-		 * Set the default value, even if we don't use TSC scaling
-		 * to avoid having stale value in the msr
-		 */
-		__svm_write_tsc_multiplier(SVM_TSC_RATIO_DEFAULT);
-	}
-
-
-	/*
-	 * Get OSVW bits.
-	 *
-	 * Note that it is possible to have a system with mixed processor
-	 * revisions and therefore different OSVW bits. If bits are not the same
-	 * on different processors then choose the worst case (i.e. if erratum
-	 * is present on one processor and not on another then assume that the
-	 * erratum is present everywhere).
-	 */
-	if (cpu_has(&boot_cpu_data, X86_FEATURE_OSVW)) {
-		uint64_t len, status = 0;
-		int err;
-
-		len = native_read_msr_safe(MSR_AMD64_OSVW_ID_LENGTH, &err);
-		if (!err)
-			status = native_read_msr_safe(MSR_AMD64_OSVW_STATUS,
-						      &err);
-
-		if (err)
-			osvw_status = osvw_len = 0;
-		else {
-			if (len < osvw_len)
-				osvw_len = len;
-			osvw_status |= status;
-			osvw_status &= (1ULL << osvw_len) - 1;
-		}
-	} else
-		osvw_status = osvw_len = 0;
-
-	svm_init_erratum_383();
-
-	amd_pmu_enable_virt();
-
-	return 0;
 }
 
 static void svm_cpu_uninit(int cpu)
@@ -4878,14 +4769,9 @@ static int svm_vm_init(struct kvm *kvm)
 	return 0;
 }
 
-static void __svm_exit(void)
-{
-	cpu_emergency_unregister_virt_callback(svm_emergency_disable);
-}
-
 void svm_module_exit(void)
 {
-	__svm_exit();
+	return;
 }
 
 static struct kvm_x86_ops svm_x86_ops __initdata = {
@@ -5325,7 +5211,8 @@ int __init svm_init(void)
 	if (r)
 		return r;
 
-	cpu_emergency_register_virt_callback(svm_emergency_disable);
+	//TODO: Remove this init call once VAC is a module
+	vac_svm_init();
 
 	/*
 	 * Common KVM initialization _must_ come last, after this, /dev/kvm is
@@ -5334,11 +5221,9 @@ int __init svm_init(void)
 	r = kvm_init(sizeof(struct vcpu_svm), __alignof__(struct vcpu_svm),
 		     THIS_MODULE);
 	if (r)
-		goto err_kvm_init;
+		return r;
+
+	svm_init_erratum_383();
 
 	return 0;
-
-err_kvm_init:
-	__svm_exit();
-	return r;
 }
