@@ -40,8 +40,6 @@ struct kvm_caps {
 	u64 supported_perf_cap;
 };
 
-void kvm_spurious_fault(void);
-
 #define KVM_NESTED_VMENTER_CONSISTENCY_CHECK(consistency_check)		\
 ({									\
 	bool failed = (consistency_check);				\
