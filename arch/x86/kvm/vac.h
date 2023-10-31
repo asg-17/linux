@@ -7,11 +7,14 @@
 
 int __init vac_init(void);
 void vac_exit(void);
+void kvm_spurious_fault(void);
 
 #ifdef CONFIG_KVM_INTEL
 bool kvm_is_vmx_supported(void);
 int __init vac_vmx_init(void);
 void vac_vmx_exit(void);
+int vmx_hardware_enable(void);
+void vmx_hardware_disable(void);
 #else
 int __init vac_vmx_init(void)
 {
@@ -24,6 +27,8 @@ void vac_vmx_exit(void) {}
 bool kvm_is_svm_supported(void);
 int __init vac_svm_init(void);
 void vac_svm_exit(void);
+int svm_hardware_enable(void);
+void svm_hardware_disable(void);
 #else
 int __init vac_svm_init(void)
 {

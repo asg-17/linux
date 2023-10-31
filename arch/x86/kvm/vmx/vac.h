@@ -17,7 +17,5 @@ void add_vmcs_to_loaded_vmcss_on_cpu(
 		struct list_head *loaded_vmcss_on_cpu_link,
 		int cpu);
 void loaded_vmcs_clear(struct loaded_vmcs *loaded_vmcs);
-int vmx_hardware_enable(void);
-void vmx_hardware_disable(void);
 
 #endif // ARCH_X86_KVM_VMX_VAC_H

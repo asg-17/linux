@@ -7204,7 +7204,8 @@ static void vmx_vcpu_free(struct kvm_vcpu *vcpu)
 
 	if (enable_pml)
 		vmx_destroy_pml_buffer(vmx);
-	free_vpid(vmx->vpid);
+	if (enable_vpid)
+		free_vpid(vmx->vpid);
 	nested_vmx_free_vcpu(vcpu);
 	free_loaded_vmcs(vmx->loaded_vmcs);
 }
@@ -7222,7 +7223,7 @@ static int vmx_vcpu_create(struct kvm_vcpu *vcpu)
 
 	err = -ENOMEM;
 
-	vmx->vpid = allocate_vpid();
+	vmx->vpid = enable_vpid ? allocate_vpid() : 0;
 
 	/*
 	 * If PML is turned on, failure on enabling PML just results in failure
@@ -7311,7 +7312,8 @@ free_vmcs:
 free_pml:
 	vmx_destroy_pml_buffer(vmx);
 free_vpid:
-	free_vpid(vmx->vpid);
+	if (enable_vpid)
+		free_vpid(vmx->vpid);
 	return err;
 }
 
@@ -7992,9 +7994,6 @@ static void __vmx_exit(void)
 {
 	allow_smaller_maxphyaddr = false;
 
-	//TODO: Remove this exit call once VAC is a module
-	vac_vmx_exit();
-
 	vmx_cleanup_l1d_flush();
 }
 
@@ -8014,8 +8013,6 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
 
 	.hardware_unsetup = vmx_hardware_unsetup,
 
-	.hardware_enable = vmx_hardware_enable,
-	.hardware_disable = vmx_hardware_disable,
 	.has_emulated_msr = vmx_has_emulated_msr,
 
 	.vm_size = sizeof(struct kvm_vmx),
@@ -8438,9 +8435,6 @@ int __init vmx_init(void)
 	r = vmx_setup_l1d_flush(vmentry_l1d_flush_param);
 	if (r)
 		goto err_l1d_flush;
-
-	//TODO: Remove this init call once VAC is a module
-	vac_vmx_init();
 
 	vmx_check_vmcs12_offsets();
 

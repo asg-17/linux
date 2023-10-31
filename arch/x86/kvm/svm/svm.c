@@ -4738,8 +4738,6 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
 	.check_processor_compatibility = svm_check_processor_compat,
 
 	.hardware_unsetup = svm_hardware_unsetup,
-	.hardware_enable = svm_hardware_enable,
-	.hardware_disable = svm_hardware_disable,
 	.has_emulated_msr = svm_has_emulated_msr,
 
 	.vcpu_create = svm_vcpu_create,
@@ -5160,9 +5158,6 @@ static struct kvm_x86_init_ops svm_init_ops __initdata = {
 static void __svm_exit(void)
 {
 	kvm_x86_vendor_exit();
-
-	//TODO: Remove this exit call once VAC is a module
-	vac_svm_exit();
 }
 
 int __init svm_init(void)
@@ -5174,9 +5169,6 @@ int __init svm_init(void)
 	r = kvm_x86_vendor_init(&svm_init_ops);
 	if (r)
 		return r;
-
-	//TODO: Remove this init call once VAC is a module
-	vac_svm_init();
 
 	/*
 	 * Common KVM initialization _must_ come last, after this, /dev/kvm is

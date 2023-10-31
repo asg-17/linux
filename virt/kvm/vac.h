@@ -13,6 +13,11 @@ int kvm_offline_cpu(unsigned int cpu);
 void hardware_disable_all(void);
 int hardware_enable_all(void);
 
+#ifdef CONFIG_X86
+int kvm_arch_hardware_enable(void);
+void kvm_arch_hardware_disable(void);
+#endif
+
 extern struct notifier_block kvm_reboot_notifier;
 
 extern struct syscore_ops kvm_syscore_ops;
