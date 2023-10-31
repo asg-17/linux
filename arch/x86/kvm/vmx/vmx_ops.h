@@ -8,6 +8,7 @@
 
 #include "hyperv.h"
 #include "vmcs.h"
+#include "../vac.h"
 #include "../x86.h"
 
 void vmread_error(unsigned long field);
