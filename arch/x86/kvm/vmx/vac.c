@@ -31,6 +31,35 @@ struct vmcs *vac_get_vmxarea(int cpu)
 static DECLARE_BITMAP(vmx_vpid_bitmap, VMX_NR_VPIDS);
 static DEFINE_SPINLOCK(vmx_vpid_lock);
 
+static bool __kvm_is_vmx_supported(void)
+{
+	int cpu = smp_processor_id();
+
+	if (!(cpuid_ecx(1) & feature_bit(VMX))) {
+		pr_err("VMX not supported by CPU %d\n", cpu);
+		return false;
+	}
+
+	if (!this_cpu_has(X86_FEATURE_MSR_IA32_FEAT_CTL) ||
+	    !this_cpu_has(X86_FEATURE_VMX)) {
+		pr_err("VMX not enabled (by BIOS) in MSR_IA32_FEAT_CTL on CPU %d\n", cpu);
+		return false;
+	}
+
+	return true;
+}
+
+bool kvm_is_vmx_supported(void)
+{
+	bool supported;
+
+	migrate_disable();
+	supported = __kvm_is_vmx_supported();
+	migrate_enable();
+
+	return supported;
+}
+
 int allocate_vpid(void)
 {
 	int vpid;
