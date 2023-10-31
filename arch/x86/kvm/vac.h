@@ -9,6 +9,7 @@ int __init vac_init(void);
 void vac_exit(void);
 
 #ifdef CONFIG_KVM_INTEL
+bool kvm_is_vmx_supported(void);
 int __init vac_vmx_init(void);
 void vac_vmx_exit(void);
 #else
@@ -20,6 +21,7 @@ void vac_vmx_exit(void) {}
 #endif
 
 #ifdef CONFIG_KVM_AMD
+bool kvm_is_svm_supported(void);
 int __init vac_svm_init(void);
 void vac_svm_exit(void);
 #else
