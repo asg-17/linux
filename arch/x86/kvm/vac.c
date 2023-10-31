@@ -3,6 +3,8 @@
 #include "vac.h"
 #include <asm/msr.h>
 
+extern bool kvm_rebooting;
+
 u32 __read_mostly kvm_uret_msrs_list[KVM_MAX_NR_USER_RETURN_MSRS];
 struct kvm_user_return_msrs __percpu *user_return_msrs;
 
@@ -35,7 +37,7 @@ void kvm_on_user_return(struct user_return_notifier *urn)
 	}
 }
 
-void kvm_user_return_msr_cpu_online(void)
+static void kvm_user_return_msr_cpu_online(void)
 {
 	unsigned int cpu = smp_processor_id();
 	struct kvm_user_return_msrs *msrs = per_cpu_ptr(user_return_msrs, cpu);
@@ -49,7 +51,7 @@ void kvm_user_return_msr_cpu_online(void)
 	}
 }
 
-void drop_user_return_notifiers(void)
+static void drop_user_return_notifiers(void)
 {
 	unsigned int cpu = smp_processor_id();
 	struct kvm_user_return_msrs *msrs = per_cpu_ptr(user_return_msrs, cpu);
@@ -115,6 +117,46 @@ int kvm_set_user_return_msr(unsigned int slot, u64 value, u64 mask)
 		msrs->registered = true;
 	}
 	return 0;
+}
+
+int kvm_arch_hardware_enable(void)
+{
+	int ret = -EIO;
+
+	kvm_user_return_msr_cpu_online();
+
+	if (kvm_is_vmx_supported())
+		ret = vmx_hardware_enable();
+	else if (kvm_is_svm_supported())
+		ret = svm_hardware_enable();
+	if (ret != 0)
+		return ret;
+
+	// TODO: Handle unstable TSC
+
+	return 0;
+}
+
+void kvm_arch_hardware_disable(void)
+{
+	if (kvm_is_vmx_supported())
+		vmx_hardware_disable();
+	else if (kvm_is_svm_supported())
+		svm_hardware_disable();
+	drop_user_return_notifiers();
+}
+
+/*
+ * Handle a fault on a hardware virtualization (VMX or SVM) instruction.
+ *
+ * Hardware virtualization extension instructions may fault if a reboot turns
+ * off virtualization while processes are running.  Usually after catching the
+ * fault we just panic; during reboot instead the instruction is ignored.
+ */
+noinstr void kvm_spurious_fault(void)
+{
+	/* Fault while not rebooting.  We want the trace. */
+	BUG_ON(!kvm_rebooting);
 }
 
 int kvm_alloc_user_return_msrs(void)

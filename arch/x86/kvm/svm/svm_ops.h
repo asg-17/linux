@@ -4,6 +4,7 @@
 
 #include <linux/compiler_types.h>
 
+#include "../vac.h"
 #include "x86.h"
 
 #define svm_asm(insn, clobber...)				\
