@@ -56,8 +56,6 @@ struct kvm_user_return_msrs {
 
 extern u32 __read_mostly kvm_nr_uret_msrs;
 
-int kvm_alloc_user_return_msrs(void);
-void kvm_free_user_return_msrs(void);
 int kvm_add_user_return_msr(u32 msr);
 int kvm_find_user_return_msr(u32 msr);
 int kvm_set_user_return_msr(unsigned int slot, u64 value, u64 mask);

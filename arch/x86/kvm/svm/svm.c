@@ -5166,9 +5166,6 @@ int __init svm_init(void)
 	if (r)
 		return r;
 
-	//TODO: Remove this init call once VAC is a module
-	vac_svm_init();
-
 	/*
 	 * Common KVM initialization _must_ come last, after this, /dev/kvm is
 	 * exposed to userspace!

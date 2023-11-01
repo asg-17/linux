@@ -17,10 +17,19 @@ menuconfig VIRTUALIZATION
 
 if VIRTUALIZATION
 
+config VAC
+	tristate "Virtualization Acceleration Component (VAC)"
+	select KVM_GENERIC_HARDWARE_ENABLING
+	help
+	  Support running multiple KVM modules on the same host. If VAC is not
+          selected to run as a separate module, it will run as part of KVM, and
+          the system will only support a single KVM.
+
 config KVM
 	tristate "Kernel-based Virtual Machine (KVM) support"
 	depends on HIGH_RES_TIMERS
 	depends on X86_LOCAL_APIC
+	depends on VAC
 	select PREEMPT_NOTIFIERS
 	select MMU_NOTIFIER
 	select HAVE_KVM_IRQCHIP
@@ -59,6 +68,14 @@ config KVM
 	  will be called kvm.
 
 	  If unsure, say N.
+
+config KVM_ID
+	string "KVM: Postfix ID for multi-KVM"
+	depends on KVM
+	default ""
+	help
+	  This is the postfix string to append to the KVM module and
+          character device to differentiate multiple KVM builds.
 
 config KVM_WERROR
 	bool "Compile KVM with -Werror"

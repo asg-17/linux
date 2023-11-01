@@ -8,33 +8,36 @@ endif
 
 include $(srctree)/virt/kvm/Makefile.kvm
 
-kvm-y			+= x86.o emulate.o i8259.o irq.o lapic.o \
+kvm-vac-y                   := $(KVM)/vac.o vac.o
+kvm-vac-$(CONFIG_KVM_INTEL) += vmx/vac.o
+kvm-vac-$(CONFIG_KVM_AMD)   += svm/vac.o
+
+kvm$(CONFIG_KVM_ID)-y	   += x86.o emulate.o i8259.o irq.o lapic.o \
 			   i8254.o ioapic.o irq_comm.o cpuid.o pmu.o mtrr.o \
 			   hyperv.o debugfs.o mmu/mmu.o mmu/page_track.o \
 			   mmu/spte.o
 
-kvm-y                   += vac.o vmx/vac.o svm/vac.o
-
 ifdef CONFIG_HYPERV
-kvm-y			+= kvm_onhyperv.o
+kvm$(CONFIG_KVM_ID)-y	    += kvm_onhyperv.o
 endif
 
-kvm-$(CONFIG_X86_64) += mmu/tdp_iter.o mmu/tdp_mmu.o
-kvm-$(CONFIG_KVM_XEN)	+= xen.o
-kvm-$(CONFIG_KVM_SMM)	+= smm.o
+kvm$(CONFIG_KVM_ID)-$(CONFIG_X86_64)    	+= mmu/tdp_iter.o mmu/tdp_mmu.o
+kvm$(CONFIG_KVM_ID)-$(CONFIG_KVM_XEN)		+= xen.o
+kvm$(CONFIG_KVM_ID)-$(CONFIG_KVM_SMM)		+= smm.o
 
-kvm-$(CONFIG_KVM_INTEL)	+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
-			   vmx/hyperv.o vmx/nested.o vmx/posted_intr.o
-kvm-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
+kvm$(CONFIG_KVM_ID)-$(CONFIG_KVM_INTEL)		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+						vmx/hyperv.o vmx/nested.o vmx/posted_intr.o
+kvm$(CONFIG_KVM_ID)-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
 
-kvm-$(CONFIG_KVM_AMD)	+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o \
-			   svm/sev.o svm/hyperv.o
+kvm$(CONFIG_KVM_ID)-$(CONFIG_KVM_AMD)		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o \
+						svm/sev.o svm/hyperv.o
 
 ifdef CONFIG_HYPERV
 kvm-$(CONFIG_KVM_AMD)	+= svm/svm_onhyperv.o
 endif
 
-obj-$(CONFIG_KVM)	+= kvm.o
+obj-$(CONFIG_VAC)       += kvm-vac.o
+obj-$(CONFIG_KVM)	+= kvm$(CONFIG_KVM_ID).o
 
 AFLAGS_svm/vmenter.o    := -iquote $(obj)
 $(obj)/svm/vmenter.o: $(obj)/kvm-asm-offsets.h
