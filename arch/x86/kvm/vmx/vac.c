@@ -8,6 +8,10 @@
 #include "vmx_ops.h"
 #include "posted_intr.h"
 
+// TODO: Move these to VAC
+void vmclear_error(struct vmcs *vmcs, u64 phys_addr) {}
+void invept_error(unsigned long ext, u64 eptp, gpa_t gpa) {}
+
 /*
  * We maintain a per-CPU linked-list of VMCS loaded on that CPU. This is needed
  * when a CPU is brought down, and we need to VMCLEAR all VMCSs loaded on it.
@@ -17,14 +21,17 @@ static DEFINE_PER_CPU(struct list_head, loaded_vmcss_on_cpu);
 static DEFINE_PER_CPU(struct vmcs *, vmxarea);
 
 DEFINE_PER_CPU(struct vmcs *, current_vmcs);
+EXPORT_SYMBOL_GPL(current_vmcs);
 
 void vac_set_vmxarea(struct vmcs *vmcs, int cpu) {
 	per_cpu(vmxarea, cpu) = vmcs;
 }
+EXPORT_SYMBOL_GPL(vac_set_vmxarea);
 
 struct vmcs *vac_get_vmxarea(int cpu) {
 	return per_cpu(vmxarea, cpu);
 }
+EXPORT_SYMBOL_GPL(vac_get_vmxarea);
 
 static DECLARE_BITMAP(vmx_vpid_bitmap, VMX_NR_VPIDS);
 static DEFINE_SPINLOCK(vmx_vpid_lock);
@@ -57,13 +64,12 @@ bool kvm_is_vmx_supported(void)
 
 	return supported;
 }
+EXPORT_SYMBOL_GPL(kvm_is_vmx_supported);
 
 int allocate_vpid(void)
 {
         int vpid;
 
-        if (!enable_vpid)
-                return 0;
         spin_lock(&vmx_vpid_lock);
         vpid = find_first_zero_bit(vmx_vpid_bitmap, VMX_NR_VPIDS);
         if (vpid < VMX_NR_VPIDS)
@@ -73,15 +79,17 @@ int allocate_vpid(void)
         spin_unlock(&vmx_vpid_lock);
         return vpid;
 }
+EXPORT_SYMBOL_GPL(allocate_vpid);
 
 void free_vpid(int vpid)
 {
-        if (!enable_vpid || vpid == 0)
+        if (vpid == 0)
                 return;
         spin_lock(&vmx_vpid_lock);
         __clear_bit(vpid, vmx_vpid_bitmap);
         spin_unlock(&vmx_vpid_lock);
 }
+EXPORT_SYMBOL_GPL(free_vpid);
 
 void add_vmcs_to_loaded_vmcss_on_cpu(
 		struct list_head *loaded_vmcss_on_cpu_link,
@@ -89,6 +97,7 @@ void add_vmcs_to_loaded_vmcss_on_cpu(
 {
 	list_add(loaded_vmcss_on_cpu_link, &per_cpu(loaded_vmcss_on_cpu, cpu));
 }
+EXPORT_SYMBOL_GPL(add_vmcs_to_loaded_vmcss_on_cpu);
 
 static void __loaded_vmcs_clear(void *arg)
 {
@@ -128,6 +137,7 @@ void loaded_vmcs_clear(struct loaded_vmcs *loaded_vmcs)
 			 __loaded_vmcs_clear, loaded_vmcs, 1);
 
 }
+EXPORT_SYMBOL_GPL(loaded_vmcs_clear);
 
 static int kvm_cpu_vmxon(u64 vmxon_pointer)
 {
@@ -173,11 +183,16 @@ int vmx_hardware_enable(void)
 		return r;
 	}
 
-	if (enable_ept)
+	// TODO: VAC: Since we can have a mix of KVMs with enable_ept=0 and =1,
+	// we need to perform a global INVEPT here.
+	// TODO: Check for the
+	// vmx_capability invept bit before executing this.
+	if (1)
 		ept_sync_global();
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(vmx_hardware_enable);
 
 static void vmclear_local_loaded_vmcss(void)
 {
@@ -244,6 +259,7 @@ void vmx_hardware_disable(void)
 
 	intel_pt_handle_vmx(0);
 }
+EXPORT_SYMBOL_GPL(vmx_hardware_disable);
 
 int __init vac_vmx_init(void)
 {
@@ -252,7 +268,8 @@ int __init vac_vmx_init(void)
 	for_each_possible_cpu(cpu) {
 		INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
 
-		pi_init_cpu(cpu);
+		// TODO: Move posted interrupts list to VAC
+		// pi_init_cpu(cpu);
 	}
 
 	cpu_emergency_register_virt_callback(vmx_emergency_disable);

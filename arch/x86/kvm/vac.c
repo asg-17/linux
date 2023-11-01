@@ -2,13 +2,18 @@
 
 #include "vac.h"
 #include <asm/msr.h>
+#include <linux/module.h>
+
+MODULE_LICENSE("GPL");
 
 extern bool kvm_rebooting;
 
 u32 __read_mostly kvm_uret_msrs_list[KVM_MAX_NR_USER_RETURN_MSRS];
 struct kvm_user_return_msrs __percpu *user_return_msrs;
+EXPORT_SYMBOL_GPL(user_return_msrs);
 
 u32 __read_mostly kvm_nr_uret_msrs;
+EXPORT_SYMBOL_GPL(kvm_nr_uret_msrs);
 
 static void kvm_on_user_return(struct user_return_notifier *urn)
 {
@@ -85,6 +90,7 @@ int kvm_add_user_return_msr(u32 msr)
 	kvm_uret_msrs_list[kvm_nr_uret_msrs] = msr;
 	return kvm_nr_uret_msrs++;
 }
+EXPORT_SYMBOL_GPL(kvm_add_user_return_msr);
 
 int kvm_find_user_return_msr(u32 msr)
 {
@@ -96,6 +102,7 @@ int kvm_find_user_return_msr(u32 msr)
 	}
 	return -1;
 }
+EXPORT_SYMBOL_GPL(kvm_find_user_return_msr);
 
 int kvm_set_user_return_msr(unsigned int slot, u64 value, u64 mask)
 {
@@ -118,6 +125,7 @@ int kvm_set_user_return_msr(unsigned int slot, u64 value, u64 mask)
 	}
 	return 0;
 }
+EXPORT_SYMBOL_GPL(kvm_set_user_return_msr);
 
 int kvm_arch_hardware_enable(void)
 {
@@ -158,6 +166,7 @@ noinstr void kvm_spurious_fault(void)
 	/* Fault while not rebooting.  We want the trace. */
 	BUG_ON(!kvm_rebooting);
 }
+EXPORT_SYMBOL_GPL(kvm_spurious_fault);
 
 int __init vac_init(void)
 {
@@ -165,8 +174,10 @@ int __init vac_init(void)
 	r = vac_vmx_init();
 	return r;
 }
+module_init(vac_init);
 
-void vac_exit(void)
+void __exit vac_exit(void)
 {
 	vac_vmx_exit();
 }
+module_exit(vac_exit);
