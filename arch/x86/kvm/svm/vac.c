@@ -8,7 +8,10 @@
 #include "vac.h"
 
 DEFINE_PER_CPU(struct svm_cpu_data, svm_data);
+EXPORT_SYMBOL_GPL(svm_data);
+
 unsigned int max_sev_asid;
+EXPORT_SYMBOL_GPL(max_sev_asid);
 
 static bool __kvm_is_svm_supported(void)
 {
@@ -52,6 +55,7 @@ bool kvm_is_svm_supported(void)
 
 	return supported;
 }
+EXPORT_SYMBOL_GPL(kvm_is_svm_supported);
 
 static inline void kvm_cpu_svm_disable(void)
 {
@@ -87,6 +91,7 @@ void svm_hardware_disable(void)
 
 	amd_pmu_disable_virt();
 }
+EXPORT_SYMBOL_GPL(svm_hardware_disable);
 
 int svm_hardware_enable(void)
 {
@@ -152,6 +157,7 @@ int svm_hardware_enable(void)
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(svm_hardware_enable);
 
 int __init vac_svm_init(void)
 {
@@ -160,7 +166,7 @@ int __init vac_svm_init(void)
 	return 0;
 }
 
-void vac_svm_exit(void)
+void __exit vac_svm_exit(void)
 {
 	cpu_emergency_unregister_virt_callback(svm_emergency_disable);
 }

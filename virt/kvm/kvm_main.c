@@ -5163,9 +5163,8 @@ static struct file_operations kvm_chardev_ops = {
 };
 
 static struct miscdevice kvm_dev = {
-	KVM_MINOR,
-	"kvm",
-	&kvm_chardev_ops,
+	.minor = KVM_MINOR,
+	.fops = &kvm_chardev_ops,
 };
 
 static void kvm_iodevice_destructor(struct kvm_io_device *dev)
@@ -5914,7 +5913,9 @@ int kvm_init(unsigned vcpu_size, unsigned vcpu_align, struct module *module)
 	/*
 	 * Registration _must_ be the very last thing done, as this exposes
 	 * /dev/kvm to userspace, i.e. all infrastructure must be setup!
+	 * Append CONFIG_KVM_ID to the device name.
 	 */
+	kvm_dev.name = kasprintf(GFP_KERNEL, "kvm%s", CONFIG_KVM_ID);
 	r = misc_register(&kvm_dev);
 	if (r) {
 		pr_err("kvm: misc device register failed\n");
