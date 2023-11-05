@@ -9,6 +9,21 @@
 #include "kvm_cache_regs.h"
 #include "kvm_emulate.h"
 
+#ifdef CONFIG_KVM_AMD
+bool kvm_is_svm_supported(void);
+int __init svm_init(void);
+void svm_module_exit(void);
+#else
+bool kvm_is_svm_supported(void) { return false; }
+#endif
+#ifdef CONFIG_KVM_INTEL
+bool kvm_is_vmx_supported(void);
+int __init vmx_init(void);
+void vmx_module_exit(void);
+#else
+bool kvm_is_vmx_supported(void) { return false; }
+#endif
+
 struct kvm_caps {
 	/* control of guest tsc rate supported? */
 	bool has_tsc_control;

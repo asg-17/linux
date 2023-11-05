@@ -15,6 +15,7 @@
  *   Amit Shah    <amit.shah@qumranet.com>
  *   Ben-Ami Yassour <benami@il.ibm.com>
  */
+#include <asm-generic/errno.h>
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kvm_host.h>
@@ -13678,15 +13679,22 @@ static int __init kvm_x86_init(void)
 {
 	kvm_mmu_x86_module_init();
 	mitigate_smt_rsb &= boot_cpu_has_bug(X86_BUG_SMT_RSB) && cpu_smt_possible();
-	return 0;
+
+	if (kvm_is_svm_supported())
+		return svm_init();
+	else if (kvm_is_vmx_supported())
+		return vmx_init();
+
+	pr_err_ratelimited("kvm: no hardware support for SVM or VMX\n");
+	return -EOPNOTSUPP;
 }
 module_init(kvm_x86_init);
 
 static void __exit kvm_x86_exit(void)
 {
-	/*
-	 * If module_init() is implemented, module_exit() must also be
-	 * implemented to allow module unload.
-	 */
+	kvm_exit();
+	kvm_x86_vendor_exit();
+	kvm_x86_ops.vendor_exit();
+
 }
 module_exit(kvm_x86_exit);
