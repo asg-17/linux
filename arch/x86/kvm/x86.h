@@ -367,6 +367,10 @@ extern unsigned int min_timer_period_us;
 
 extern bool enable_vmware_backdoor;
 
+extern bool nested;
+
+extern bool enable_vnmi;
+
 extern int pi_inject_timer;
 
 extern bool report_ignored_msrs;

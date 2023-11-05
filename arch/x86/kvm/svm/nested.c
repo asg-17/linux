@@ -666,7 +666,7 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
 	else
 		int_ctl_vmcb01_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
 
-	if (vnmi) {
+	if (enable_vnmi) {
 		if (vmcb01->control.int_ctl & V_NMI_PENDING_MASK) {
 			svm->vcpu.arch.nmi_pending++;
 			kvm_make_request(KVM_REQ_EVENT, &svm->vcpu);
@@ -1083,7 +1083,7 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
 		svm_update_lbrv(vcpu);
 	}
 
-	if (vnmi) {
+	if (enable_vnmi) {
 		if (vmcb02->control.int_ctl & V_NMI_BLOCKING_MASK)
 			vmcb01->control.int_ctl |= V_NMI_BLOCKING_MASK;
 		else

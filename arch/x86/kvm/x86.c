@@ -177,6 +177,17 @@ module_param(enable_vmware_backdoor, bool, S_IRUGO);
 EXPORT_SYMBOL_GPL(enable_vmware_backdoor);
 
 /*
+ * If nested=1, nested virtualization is supported
+ */
+bool __read_mostly nested = 1;
+module_param(nested, bool, S_IRUGO);
+EXPORT_SYMBOL_GPL(nested);
+
+bool __read_mostly enable_vnmi = 1;
+module_param(enable_vnmi, bool, S_IRUGO);
+EXPORT_SYMBOL_GPL(enable_vnmi);
+
+/*
  * Flags to manipulate forced emulation behavior (any non-zero value will
  * enable forced emulation).
  */

@@ -197,10 +197,6 @@ module_param(pause_filter_count_max, ushort, 0444);
 bool npt_enabled = true;
 module_param_named(npt, npt_enabled, bool, 0444);
 
-/* allow nested virtualization in KVM/SVM */
-static int nested = true;
-module_param(nested, int, S_IRUGO);
-
 /* enable/disable Next RIP Save */
 int nrips = true;
 module_param(nrips, int, 0444);
@@ -233,9 +229,6 @@ module_param(dump_invalid_vmcb, bool, 0644);
 
 bool intercept_smi = true;
 module_param(intercept_smi, bool, 0444);
-
-bool vnmi = true;
-module_param(vnmi, bool, 0444);
 
 static bool svm_gp_erratum_intercept = true;
 
@@ -1357,7 +1350,7 @@ static void init_vmcb(struct kvm_vcpu *vcpu)
 	if (kvm_vcpu_apicv_active(vcpu))
 		avic_init_vmcb(svm, vmcb);
 
-	if (vnmi)
+	if (enable_vnmi)
 		svm->vmcb->control.int_ctl |= V_NMI_ENABLE_MASK;
 
 	if (vgif) {
@@ -5089,7 +5082,7 @@ static __init void svm_set_cpu_caps(void)
 		if (vgif)
 			kvm_cpu_cap_set(X86_FEATURE_VGIF);
 
-		if (vnmi)
+		if (enable_vnmi)
 			kvm_cpu_cap_set(X86_FEATURE_VNMI);
 
 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
@@ -5253,11 +5246,11 @@ static __init int svm_hardware_setup(void)
 			pr_info("Virtual GIF supported\n");
 	}
 
-	vnmi = vgif && vnmi && boot_cpu_has(X86_FEATURE_VNMI);
-	if (vnmi)
+	enable_vnmi = vgif && enable_vnmi && boot_cpu_has(X86_FEATURE_VNMI);
+	if (enable_vnmi)
 		pr_info("Virtual NMI enabled\n");
 
-	if (!vnmi) {
+	if (!enable_vnmi) {
 		svm_x86_ops.is_vnmi_pending = NULL;
 		svm_x86_ops.set_vnmi_pending = NULL;
 	}
